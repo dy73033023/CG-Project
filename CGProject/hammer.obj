@@ -1,6 +1,7 @@
 # Blender 5.0.0
 # www.blender.org
 mtllib hammer.mtl
+usemtl HammerMaterial
 o Cylinder
 v 0.000166 0.007858 -0.199476
 v 0.000166 2.057114 -0.199476
