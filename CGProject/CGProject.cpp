@@ -7,63 +7,164 @@
 #include <glm.hpp>
 #include <ext.hpp>
 #include <gtc/matrix_transform.hpp>
-#include <gtc/type_ptr.hpp> // glm::value_ptr 사용을 위해 추가
+#include <gtc/type_ptr.hpp>
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <vector>
 #include <string>
 #include <map>
-#include <algorithm> // max, min 사용을 위해 추가
+#include <algorithm>
 #include "stb_image.h"
 using namespace std;
 using namespace glm;
 
-// -------------------- 구조체 --------------------
+// -------------------- 구조체 (Structs) --------------------
+
 // 면 하나의 렌더링 정보 (FaceRenderObject) - 단일 메쉬를 위해 하나만 사용됨
 struct FaceRenderObject {
-    GLuint VAO = 0;
-    GLuint EBO = 0;
-    size_t indexCount = 0;
-    GLuint textureID = 0;
+    GLuint Vao = 0;
+    GLuint Ebo = 0;
+    size_t IndexCount = 0;
+    GLuint TextureId = 0;
 };
 
 // 다중 텍스처 오브젝트 정보 (MultiTextureObject)
 struct MultiTextureObject {
-    GLuint sharedVBO = 0; // 모든 면이 공유하는 정점 버퍼
-    std::vector<FaceRenderObject> faces;
-    glm::mat4 modelMatrix = glm::mat4(1.0f);
+    GLuint SharedVbo = 0;
+    std::vector<FaceRenderObject> Faces;
+    glm::mat4 ModelMatrix = glm::mat4(1.0f);
 };
 
-// -------------------- 전역 변수 --------------------
-GLuint shaderProgram = 0;
 
-// Uniform 위치 캐시
-GLint loc_model = -1, loc_view = -1, loc_projection = -1;
-GLint loc_objectColor = -1, loc_hasTexture = -1, loc_lightPos = -1, loc_lightColor = -1, loc_lightIntensity = -1, loc_viewPos = -1;
-GLint loc_mainTexture = -1;
+// -------------------- 전역 변수 (Global Variables) --------------------
+GLuint ShaderProgram = 0;
 
-// 객체 렌더링
-MultiTextureObject hammerObject; // ?? hammer.obj 전용 오브젝트
+// Uniform 위치 캐시 (Loc: Location)
+GLint LocModel = -1, LocView = -1, LocProjection = -1;
+GLint LocObjectColor = -1, LocHasTexture = -1, LocLightPos = -1, LocLightColor = -1, LocLightIntensity = -1, LocViewPos = -1;
+GLint LocMainTexture = -1;
+
+// 객체 렌더링 정보
+// -- 하늘 -- 
+MultiTextureObject BackgroundObject;
+MultiTextureObject BackgroundObject2;
+MultiTextureObject BackgroundObject3;
+
+// -- 땅 -- 
+MultiTextureObject GroundObject;
+
+// -- 망치 -- 
+MultiTextureObject HammerObject;
 
 // 텍스처 ID들을 저장할 벡터
-std::vector<GLuint> hammerTextureIDs; // ?? hammerObject 전용 텍스처
+std::vector<GLuint> BackgroundTextureIds;
+std::vector<GLuint> Background2TextureIds;
+std::vector<GLuint> Background3TextureIds;
+
+std::vector<GLuint> GroundTextureIds;
+
+std::vector<GLuint> HammerTextureIds;
 
 // 축 VAO
-GLuint axesVAO = 0;
+GLuint AxesVao = 0;
+// ----------------------------------------------------
 
-// 상태
-bool rotateObject = true;
-float rotationAngle = 0.0f;
-float lightIntensity = 1.0f;
-glm::vec3 lightPos = glm::vec3(5.0f, 8.0f, 5.0f);
-glm::vec3 viewPos = glm::vec3(0.0f, 3.0f, 10.0f);
 
-// 회전 관련 변수
-float rx = 0, ry = 1; // y축으로 초기 회전
+// ----------------- 변환 관련 변수 (Transformation Variables) -------------------
+bool RotateObject = true;
+float RotationAngle = 0.0f;
+float LightIntensity = 1.0f;
+glm::vec3 LightPos = glm::vec3(5.0f, 8.0f, 5.0f);
+glm::vec3 ViewPos = glm::vec3(0.0f, 3.0f, 10.0f);
 
-// -------------------- 텍스처 로더 --------------------
-GLuint loadTexture(const char* path) {
+// 회전 축
+float Rx = 0, Ry = 1;
+// -----------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// -------------------- 텍스처 로더 (Texture Loader) --------------------
+GLuint LoadTexture(const char* path) {
     int width, height, channels;
     // 강제로 RGBA 포맷 (4채널) 로드
     unsigned char* data = stbi_load(path, &width, &height, &channels, 4);
@@ -73,9 +174,9 @@ GLuint loadTexture(const char* path) {
         return 0;
     }
 
-    GLuint textureID;
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_2D, textureID);
+    GLuint textureId;
+    glGenTextures(1, &textureId);
+    glBindTexture(GL_TEXTURE_2D, textureId);
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
@@ -87,11 +188,11 @@ GLuint loadTexture(const char* path) {
 
     stbi_image_free(data);
     std::cout << "텍스처 로드 성공: " << path << std::endl;
-    return textureID;
+    return textureId;
 }
 
-// -------------------- 파일 리더 --------------------
-string readFile(const string& path) {
+// -------------------- 파일 리더 (File Reader) --------------------
+string ReadFile(const string& path) {
     ifstream f(path);
     if (!f.is_open()) {
         cerr << "파일 로드 실패: " << path << endl;
@@ -100,8 +201,8 @@ string readFile(const string& path) {
     return string((istreambuf_iterator<char>(f)), istreambuf_iterator<char>());
 }
 
-// -------------------- 셰이더 컴파일러 --------------------
-GLuint compileShader(GLenum type, const string& src) {
+// -------------------- 셰이더 컴파일러 (Shader Compiler) --------------------
+GLuint CompileShader(GLenum type, const string& src) {
     GLuint shader = glCreateShader(type);
     const char* c = src.c_str();
     glShaderSource(shader, 1, &c, nullptr);
@@ -120,65 +221,65 @@ GLuint compileShader(GLenum type, const string& src) {
 }
 
 
-// -------------------- 셰이더 프로그램 생성 (오류 발생 시 0 반환) --------------------
-void createShaderProgram() {
-    // 1. 셰이더 소스 읽기 (실제 파일명으로 변경하세요)
-    string vs = readFile("vertex.glsl");
-    string fs = readFile("fragment.glsl");
+// -------------------- 셰이더 프로그램 생성 (Shader Program Creator) --------------------
+void CreateShaderProgram() {
+    // 1. 셰이더 소스 읽기 
+    string vs = ReadFile("vertex.glsl");
+    string fs = ReadFile("fragment.glsl");
 
     if (vs.empty() || fs.empty()) {
         cerr << "셰이더 파일 로드 실패. Uniform 캐싱 건너뜀." << endl;
-        shaderProgram = 0;
+        ShaderProgram = 0;
         return;
     }
 
     // 2. 셰이더 컴파일
-    GLuint vertexShader = compileShader(GL_VERTEX_SHADER, vs);
-    GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, fs);
+    GLuint vertexShader = CompileShader(GL_VERTEX_SHADER, vs);
+    GLuint fragmentShader = CompileShader(GL_FRAGMENT_SHADER, fs);
 
     if (vertexShader == 0 || fragmentShader == 0) {
-        shaderProgram = 0;
+        ShaderProgram = 0;
         return;
     }
 
     // 3. 셰이더 프로그램 링크
-    shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
+    ShaderProgram = glCreateProgram();
+    glAttachShader(ShaderProgram, vertexShader);
+    glAttachShader(ShaderProgram, fragmentShader);
+    glLinkProgram(ShaderProgram);
 
     // 4. 링크 오류 검사
     GLint success;
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+    glGetProgramiv(ShaderProgram, GL_LINK_STATUS, &success);
     if (!success) {
         GLchar infoLog[1024];
-        glGetProgramInfoLog(shaderProgram, 1024, NULL, infoLog);
+        glGetProgramInfoLog(ShaderProgram, 1024, NULL, infoLog);
         cerr << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << endl;
-        shaderProgram = 0;
+        ShaderProgram = 0;
         return;
     }
 
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    // 5. Uniform 위치 캐싱 (Uniform은 프로그램이 유효할 때만 찾습니다)
-    loc_model = glGetUniformLocation(shaderProgram, "model");
-    loc_view = glGetUniformLocation(shaderProgram, "view");
-    loc_projection = glGetUniformLocation(shaderProgram, "projection");
-    loc_mainTexture = glGetUniformLocation(shaderProgram, "mainTexture");
-    loc_objectColor = glGetUniformLocation(shaderProgram, "objectColor");
-    loc_hasTexture = glGetUniformLocation(shaderProgram, "hasTexture");
-    loc_lightPos = glGetUniformLocation(shaderProgram, "lightPos");
-    loc_lightColor = glGetUniformLocation(shaderProgram, "lightColor");
-    loc_lightIntensity = glGetUniformLocation(shaderProgram, "lightIntensity");
-    loc_viewPos = glGetUniformLocation(shaderProgram, "viewPos");
+    // 5. Uniform 위치 캐싱 (Uniform Location Caching)
+    LocModel = glGetUniformLocation(ShaderProgram, "model");
+    LocView = glGetUniformLocation(ShaderProgram, "view");
+    LocProjection = glGetUniformLocation(ShaderProgram, "projection");
+    LocMainTexture = glGetUniformLocation(ShaderProgram, "mainTexture");
+    LocObjectColor = glGetUniformLocation(ShaderProgram, "objectColor");
+    LocHasTexture = glGetUniformLocation(ShaderProgram, "hasTexture");
+    LocLightPos = glGetUniformLocation(ShaderProgram, "lightPos");
+    LocLightColor = glGetUniformLocation(ShaderProgram, "lightColor");
+    LocLightIntensity = glGetUniformLocation(ShaderProgram, "lightIntensity");
+    LocViewPos = glGetUniformLocation(ShaderProgram, "viewPos");
 
     glUseProgram(0);
 }
 
 
-// ------------------- 완벽한 OBJ 로더 (위치 + UV + 법선 지원) -------------------
-bool loadOBJ(const char* path,
+// ------------------- OBJ 로더  -------------------
+bool LoadObj(const char* path,
     std::vector<GLfloat>& vertices,
     std::vector<unsigned int>& indices)
 {
@@ -186,9 +287,9 @@ bool loadOBJ(const char* path,
     std::vector<glm::vec2> uvs;
     std::vector<glm::vec3> normals;
 
-    std::vector<glm::vec3> temp_vertices;
-    std::vector<glm::vec2> temp_uvs;
-    std::vector<glm::vec3> temp_normals;
+    std::vector<glm::vec3> tempVertices;
+    std::vector<glm::vec2> tempUvs;
+    std::vector<glm::vec3> tempNormals;
     std::map<std::string, unsigned int> vertexMap;
 
     FILE* file;
@@ -216,26 +317,25 @@ bool loadOBJ(const char* path,
         }
         else if (line[0] == 'f' && line[1] == ' ') {
             // 최대 4개의 정점 세트를 담을 변수 준비 (v1~v4)
-            // v4, vt4, vn4는 4개 정점일 때만 사용되며, 초기화하지 않아도 sscanf_s가 읽은 만큼만 matches를 반환합니다.
             unsigned int v1, vt1, vn1, v2, vt2, vn2, v3, vt3, vn3, v4, vt4, vn4;
             int matches;
 
             // 헬퍼 람다 함수: 인덱스 조합이 같으면 재사용, 다르면 새 정점 생성
-            auto processVertex = [&](unsigned int v_idx, unsigned int vt_idx, unsigned int vn_idx) -> unsigned int {
+            auto ProcessVertex = [&](unsigned int vIdx, unsigned int vtIdx, unsigned int vnIdx) -> unsigned int {
                 char key[64];
-                sprintf_s(key, "%u/%u/%u", v_idx, vt_idx, vn_idx);
+                sprintf_s(key, "%u/%u/%u", vIdx, vtIdx, vnIdx);
                 std::string keyStr = key;
 
                 auto it = vertexMap.find(keyStr);
                 if (it == vertexMap.end()) {
-                    unsigned int newIndex = (unsigned int)temp_vertices.size();
+                    unsigned int newIndex = (unsigned int)tempVertices.size();
                     vertexMap[keyStr] = newIndex;
 
                     // 인덱스는 1부터 시작하므로 -1
-                    temp_vertices.push_back(positions[v_idx - 1]);
-                    // UV/Normal 인덱스가 유효하지 않으면 기본값 (0.0f 또는 (0,1,0)) 사용
-                    temp_uvs.push_back((vt_idx > 0 && vt_idx <= uvs.size()) ? uvs[vt_idx - 1] : glm::vec2(0.0f));
-                    temp_normals.push_back((vn_idx > 0 && vn_idx <= normals.size()) ? normals[vn_idx - 1] : glm::vec3(0, 1, 0));
+                    tempVertices.push_back(positions[vIdx - 1]);
+                    // UV/Normal 인덱스가 유효하지 않으면 기본값 사용
+                    tempUvs.push_back((vtIdx > 0 && vtIdx <= uvs.size()) ? uvs[vtIdx - 1] : glm::vec2(0.0f));
+                    tempNormals.push_back((vnIdx > 0 && vnIdx <= normals.size()) ? normals[vnIdx - 1] : glm::vec3(0, 1, 0));
 
                     return newIndex;
                 }
@@ -243,33 +343,32 @@ bool loadOBJ(const char* path,
                 };
 
             // -------------------- 1. Quad (4 vertices: v/vt/vn) 처리 시도 --------------------
-            // 4개의 정점 세트 (총 12개 인덱스)를 읽습니다.
             matches = sscanf_s(line, "f %u/%u/%u %u/%u/%u %u/%u/%u %u/%u/%u",
                 &v1, &vt1, &vn1, &v2, &vt2, &vn2, &v3, &vt3, &vn3, &v4, &vt4, &vn4);
 
             if (matches == 12) { // **성공: 4개의 정점 세트 (Quad)**
-                // Quad(V1, V2, V3, V4)를 Triangle 2개로 삼각화: (T1: V1, V2, V3), (T2: V1, V3, V4)
+                // Quad(V1, V2, V3, V4)를 Triangle 2개로 삼각화: (T1: V1, V3, V2), (T2: V1, V4, V3)
 
-                // Triangle 1 (V1, V2, V3)
-                indices.push_back(processVertex(v1, vt1, vn1));
-                indices.push_back(processVertex(v2, vt2, vn2));
-                indices.push_back(processVertex(v3, vt3, vn3));
+                // Triangle 1 (V1, V3, V2) - 와인딩 순서 반전
+                indices.push_back(ProcessVertex(v1, vt1, vn1));
+                indices.push_back(ProcessVertex(v3, vt3, vn3));
+                indices.push_back(ProcessVertex(v2, vt2, vn2));
 
-                // Triangle 2 (V1, V3, V4)
-                indices.push_back(processVertex(v1, vt1, vn1)); // V1 재사용
-                indices.push_back(processVertex(v3, vt3, vn3)); // V3 재사용
-                indices.push_back(processVertex(v4, vt4, vn4)); // V4 (새 정점)
+                // Triangle 2 (V1, V4, V3) - 와인딩 순서 반전
+                indices.push_back(ProcessVertex(v1, vt1, vn1)); // V1 재사용
+                indices.push_back(ProcessVertex(v4, vt4, vn4));
+                indices.push_back(ProcessVertex(v3, vt3, vn3)); // V3 재사용
 
-                continue; // 4-vertex 처리가 완료되었으므로 다음 라인으로
+                continue;
             }
 
             // -------------------- 2. Triangle (3 vertices: v/vt/vn) 처리 시도 --------------------
-            // matches가 9라면 3개의 정점 세트만 읽은 경우입니다.
             if (matches == 9) { // **성공: 3개의 정점 세트 (Triangle)**
-                // T1: V1, V2, V3
-                indices.push_back(processVertex(v1, vt1, vn1));
-                indices.push_back(processVertex(v2, vt2, vn2));
-                indices.push_back(processVertex(v3, vt3, vn3));
+                // T1: V1, V3, V2 - 와인딩 순서 반전
+                indices.push_back(ProcessVertex(v1, vt1, vn1));
+                indices.push_back(ProcessVertex(v3, vt3, vn3));
+                indices.push_back(ProcessVertex(v2, vt2, vn2));
+
                 continue;
             }
 
@@ -281,10 +380,11 @@ bool loadOBJ(const char* path,
             // f v//vn 형식 지원 (UV 없는 경우)
             matches = sscanf_s(line, "f %u//%u %u//%u %u//%u", &v1, &vn1, &v2, &vn2, &v3, &vn3);
             if (matches == 6) {
-                vt1 = vt2 = vt3 = 0; // 이 포맷은 vt를 읽지 않았으므로 0으로 설정
-                indices.push_back(processVertex(v1, vt1, vn1));
-                indices.push_back(processVertex(v2, vt2, vn2));
-                indices.push_back(processVertex(v3, vt3, vn3));
+                vt1 = vt2 = vt3 = 0;
+                // 순서 반전: V1, V3, V2
+                indices.push_back(ProcessVertex(v1, vt1, vn1));
+                indices.push_back(ProcessVertex(v3, vt3, vn3));
+                indices.push_back(ProcessVertex(v2, vt2, vn2));
                 continue;
             }
 
@@ -292,10 +392,11 @@ bool loadOBJ(const char* path,
             v1 = vt1 = vn1 = v2 = vt2 = vn2 = v3 = vt3 = vn3 = 0; // 변수 재초기화
             matches = sscanf_s(line, "f %u/%u %u/%u %u/%u", &v1, &vt1, &v2, &vt2, &v3, &vt3);
             if (matches == 6) {
-                vn1 = vn2 = vn3 = 0; // 이 포맷은 vn을 읽지 않았으므로 0으로 설정
-                indices.push_back(processVertex(v1, vt1, vn1));
-                indices.push_back(processVertex(v2, vt2, vn2));
-                indices.push_back(processVertex(v3, vt3, vn3));
+                vn1 = vn2 = vn3 = 0;
+                // 순서 반전: V1, V3, V2
+                indices.push_back(ProcessVertex(v1, vt1, vn1));
+                indices.push_back(ProcessVertex(v3, vt3, vn3));
+                indices.push_back(ProcessVertex(v2, vt2, vn2));
                 continue;
             }
 
@@ -304,45 +405,45 @@ bool loadOBJ(const char* path,
     }
     fclose(file); // 파일 닫기
 
-    // 인터리빙: pos(3) + uv(2) + normal(3) = 8 floats (기존 코드와 동일)
-    for (size_t i = 0; i < temp_vertices.size(); ++i) {
-        vertices.push_back(temp_vertices[i].x);
-        vertices.push_back(temp_vertices[i].y);
-        vertices.push_back(temp_vertices[i].z);
+    // 인터리빙: pos(3) + uv(2) + normal(3) = 8 floats 
+    for (size_t i = 0; i < tempVertices.size(); ++i) {
+        vertices.push_back(tempVertices[i].x);
+        vertices.push_back(tempVertices[i].y);
+        vertices.push_back(tempVertices[i].z);
 
-        vertices.push_back(temp_uvs[i].x);
-        vertices.push_back(temp_uvs[i].y);
+        vertices.push_back(tempUvs[i].x);
+        vertices.push_back(tempUvs[i].y);
 
-        vertices.push_back(temp_normals[i].x);
-        vertices.push_back(temp_normals[i].y);
-        vertices.push_back(temp_normals[i].z);
+        vertices.push_back(tempNormals[i].x);
+        vertices.push_back(tempNormals[i].y);
+        vertices.push_back(tempNormals[i].z);
     }
 
     return !vertices.empty();
 }
 
-// -------------------- 축 렌더링 초기화 함수 (새로 추가) --------------------
-void createAxes() {
+// -------------------- 축 렌더링 초기화 함수 (Axes Init) --------------------
+void CreateAxes() {
     // X, Y, Z 축의 시작점(0,0,0)과 끝점(10, 0, 0 등)을 정의합니다. (위치 3개만 사용)
     GLfloat axesVertices[] = {
         // X-axis (Red)
          -10.0f,  0.0f,  0.0f,
-         10.0f,  0.0f,  0.0f,
-         // Y-axis (Green)
-          0.0f,  -10.0f,  0.0f,
-          0.0f,  10.0f,  0.0f,
-          // Z-axis (Blue)
-           0.0f,  0.0f,  -10.0f,
-           0.0f,  0.0f, 10.0f
+          10.0f,  0.0f,  0.0f,
+          // Y-axis (Green)
+           0.0f,  -10.0f,  0.0f,
+           0.0f,  10.0f,  0.0f,
+           // Z-axis (Blue)
+            0.0f,  0.0f,  -10.0f,
+            0.0f,  0.0f, 10.0f
     };
 
-    GLuint axesVBO;
-    glGenVertexArrays(1, &axesVAO);
-    glGenBuffers(1, &axesVBO);
+    GLuint axesVbo;
+    glGenVertexArrays(1, &AxesVao);
+    glGenBuffers(1, &axesVbo);
 
-    glBindVertexArray(axesVAO);
+    glBindVertexArray(AxesVao);
 
-    glBindBuffer(GL_ARRAY_BUFFER, axesVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, axesVbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(axesVertices), axesVertices, GL_STATIC_DRAW);
 
     // Position attribute (location 0)만 사용합니다.
@@ -357,82 +458,81 @@ void createAxes() {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-// -------------------- 축 렌더링 함수 (새로 추가) --------------------
-void drawAxes() {
-    if (axesVAO == 0) return;
+// -------------------- 축 렌더링 함수 (Draw Axes) --------------------
+void DrawAxes() {
+    if (AxesVao == 0) return;
 
     // 1. Model Matrix: 축은 고정되어 있으므로 Identity 행렬을 사용합니다.
     glm::mat4 identityModel = glm::mat4(1.0f);
-    glUniformMatrix4fv(loc_model, 1, GL_FALSE, glm::value_ptr(identityModel));
+    glUniformMatrix4fv(LocModel, 1, GL_FALSE, glm::value_ptr(identityModel));
 
     // 2. 텍스처와 조명을 임시로 비활성화하여 순수한 색상으로 출력합니다.
-    glUniform1i(loc_hasTexture, 0);
-    glUniform1f(loc_lightIntensity, 0.0f);
+    glUniform1i(LocHasTexture, 0);
+    glUniform1f(LocLightIntensity, 0.0f);
 
     // 3. 선의 두께 설정
     GLfloat originalLineWidth;
     glGetFloatv(GL_LINE_WIDTH, &originalLineWidth); // 기존 두께 저장
     glLineWidth(3.0f);
 
-    glBindVertexArray(axesVAO);
+    glBindVertexArray(AxesVao);
 
     // X-axis (Red)
-    glUniform3f(loc_objectColor, 1.0f, 0.0f, 0.0f);
+    glUniform3f(LocObjectColor, 1.0f, 0.0f, 0.0f);
     glDrawArrays(GL_LINES, 0, 2);
 
     // Y-axis (Green)
-    glUniform3f(loc_objectColor, 0.0f, 1.0f, 0.0f);
+    glUniform3f(LocObjectColor, 0.0f, 1.0f, 0.0f);
     glDrawArrays(GL_LINES, 2, 2);
 
     // Z-axis (Blue)
-    glUniform3f(loc_objectColor, 0.0f, 0.0f, 1.0f);
+    glUniform3f(LocObjectColor, 0.0f, 0.0f, 1.0f);
     glDrawArrays(GL_LINES, 4, 2);
 
     glBindVertexArray(0);
 
     // 4. 원래 상태로 복원
-    glUniform1f(loc_lightIntensity, lightIntensity); // 원래 조명 세기로 복원
+    glUniform1f(LocLightIntensity, LightIntensity); // 원래 조명 세기로 복원
     glLineWidth(originalLineWidth); // 선 두께 복원
-    glUniform3f(loc_objectColor, 1.0f, 1.0f, 1.0f); // 오브젝트 색상 기본값 복원
+    glUniform3f(LocObjectColor, 1.0f, 1.0f, 1.0f); // 오브젝트 색상 기본값 복원
 }
 
-
-// ------------------- 다중 면 오브젝트 생성 (Generic OBJ용으로 수정됨) -------------------
-void createMultiFaceObject(MultiTextureObject& mobj, const string& objPath, const glm::vec3& scale,
-    const std::vector<GLuint>& textureIDs)
+// ------------------- 다중 면 오브젝트 생성 (Create Object) -------------------
+void CreateMultiFaceObject(MultiTextureObject& mobj, const string& objPath, const glm::vec3& scale,
+    const std::vector<GLuint>& textureIds)
 {
     std::vector<float> verts;
     std::vector<unsigned int> indices;
 
-    if (!loadOBJ(objPath.c_str(), verts, indices) || verts.empty()) {
+    if (!LoadObj(objPath.c_str(), verts, indices) || verts.empty()) {
         cerr << "OBJ 로드 실패: " << objPath << " 또는 데이터 없음." << endl;
         return;
     }
 
-    mobj.modelMatrix = glm::scale(glm::mat4(1.0f), scale);
-    mobj.faces.clear();
+    mobj.ModelMatrix = glm::scale(glm::mat4(1.0f), scale);
+    mobj.Faces.clear();
 
     // 1. Shared VBO (정점 버퍼) 생성 및 데이터 로드 (모든 면이 공유)
-    glGenBuffers(1, &mobj.sharedVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, mobj.sharedVBO);
+    glGenBuffers(1, &mobj.SharedVbo);
+    glBindBuffer(GL_ARRAY_BUFFER, mobj.SharedVbo);
     glBufferData(GL_ARRAY_BUFFER, verts.size() * sizeof(float), verts.data(), GL_STATIC_DRAW);
 
-    // 2. 모든 인덱스를 사용하는 단일 FaceRenderObject 생성 (복잡한 OBJ용)
+    // 2. 모든 인덱스를 사용하는 단일 FaceRenderObject 생성 
     FaceRenderObject faceObj;
-    faceObj.indexCount = indices.size();
-    // OBJ는 보통 단일 텍스처를 사용하며, 텍스처가 있다면 첫 번째 텍스처 ID를 사용
-    faceObj.textureID = textureIDs.empty() ? 0 : textureIDs[0];
+    faceObj.IndexCount = indices.size();
+    // 텍스처가 있다면 첫 번째 텍스처 ID를 사용
+    faceObj.TextureId = textureIds.empty() ? 0 : textureIds[0];
 
     // 3. VAO 및 EBO 생성
-    glGenVertexArrays(1, &faceObj.VAO);
-    glBindVertexArray(faceObj.VAO);
+    glGenVertexArrays(1, &faceObj.Vao);
+    glBindVertexArray(faceObj.Vao);
 
-    glGenBuffers(1, &faceObj.EBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, faceObj.EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, faceObj.indexCount * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+    glGenBuffers(1, &faceObj.Ebo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, faceObj.Ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, faceObj.IndexCount * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
 
-    // VBO는 공유 (mobj.sharedVBO) -> VAO에 연결
-    glBindBuffer(GL_ARRAY_BUFFER, mobj.sharedVBO);
+    // VBO는 공유 (mobj.SharedVbo) -> VAO에 연결
+    glBindBuffer(GL_ARRAY_BUFFER, mobj.SharedVbo);
 
     // 정점 속성 설정 (위치 0, UV 1, 법선 2)
     // 스트라이드: pos(3) + uv(2) + normal(3) = 8 floats
@@ -446,102 +546,215 @@ void createMultiFaceObject(MultiTextureObject& mobj, const string& objPath, cons
 
     glBindVertexArray(0); // VAO 해제
 
-    mobj.faces.push_back(faceObj);
+    mobj.Faces.push_back(faceObj);
     cout << "OBJ (" << objPath << ") 로드 완료. 총 버텍스: " << verts.size() / 8 << ", 총 인덱스: " << indices.size() << endl;
 }
 
-// -------------------- 렌더링 --------------------
-void drawScene() {
-    if (shaderProgram == 0) return; // 셰이더 실패 시 드로우 방지
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// -------------------- 렌더링 (Draw Scene) --------------------
+void DrawScene() {
+    if (ShaderProgram == 0) return;
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glUseProgram(shaderProgram);
+    glUseProgram(ShaderProgram);
 
-    // 카메라/뷰 설정 (고정된 카메라 사용)
-    glm::vec3 camPos = glm::vec3(5.0f, 5.0f, 5.0f);
+    // 카메라/뷰 설정 
+    glm::vec3 CameraPos = glm::vec3(0.0f, 10.0f, 30.0f);
 
     // View 행렬 조작 없이 일반 View 행렬 그대로 사용
-    glm::mat4 view = glm::lookAt(camPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0, 1.0f, 0));
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)800 / 800, 0.1f, 1000.0f);
+    glm::mat4 View = glm::lookAt(CameraPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0, 1.0f, 0));
+    glm::mat4 Projection = glm::perspective(glm::radians(45.0f), (float)800 / 800, 0.1f, 1000.0f);
 
-    glUniformMatrix4fv(loc_view, 1, GL_FALSE, glm::value_ptr(view));
-    glUniformMatrix4fv(loc_projection, 1, GL_FALSE, glm::value_ptr(projection));
+    glUniformMatrix4fv(LocView, 1, GL_FALSE, glm::value_ptr(View));
+    glUniformMatrix4fv(LocProjection, 1, GL_FALSE, glm::value_ptr(Projection));
 
     // 조명/카메라 위치 설정
-    glUniform3fv(loc_lightPos, 1, glm::value_ptr(lightPos));
-    glUniform3f(loc_lightColor, 1.0f, 1.0f, 1.0f);
-    glUniform3fv(loc_viewPos, 1, glm::value_ptr(camPos));
+    glUniform3fv(LocLightPos, 1, glm::value_ptr(LightPos));
+    glUniform3f(LocLightColor, 1.0f, 1.0f, 1.0f);
+    glUniform3fv(LocViewPos, 1, glm::value_ptr(CameraPos));
 
-    // ? 기본 objectColor 설정
-    glUniform3f(loc_objectColor, 1.0f, 1.0f, 1.0f);
-    glUniform1f(loc_lightIntensity, lightIntensity); // 일반 조명 세기 설정
+    // 기본 objectColor 설정
+    glUniform3f(LocObjectColor, 1.0f, 1.0f, 1.0f);
+    glUniform1f(LocLightIntensity, LightIntensity); // 일반 조명 세기 설정
+
+    // 축 드로우
+    DrawAxes();
+    glUniform1f(LocLightIntensity, LightIntensity);
 
 
-    // -------------------- 통합 렌더링 람다 함수 --------------------
-    auto draw = [&](const MultiTextureObject& mobj, const glm::mat4& modelMatrix) {
+
+    // -------------------- 통합 렌더링 람다 함수 (Draw Logic) --------------------
+    auto Draw = [&](const MultiTextureObject& mobj, const glm::mat4& modelMatrix) {
         // 오브젝트가 로드되지 않았으면 그리지 않음
-        if (mobj.faces.empty() || mobj.faces[0].VAO == 0) return;
+        if (mobj.Faces.empty() || mobj.Faces[0].Vao == 0) return;
 
-        glUniformMatrix4fv(loc_model, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+        glUniformMatrix4fv(LocModel, 1, GL_FALSE, glm::value_ptr(modelMatrix));
 
         // 단일 메쉬로 처리하므로 첫 번째(유일한) 면만 렌더링합니다.
-        const auto& faceObj = mobj.faces[0];
+        const auto& faceObj = mobj.Faces[0];
 
-        glUniform1i(loc_hasTexture, faceObj.textureID != 0 ? 1 : 0);
+        glUniform1i(LocHasTexture, faceObj.TextureId != 0 ? 1 : 0);
 
-        if (faceObj.textureID != 0) {
+        if (faceObj.TextureId != 0) {
             glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, faceObj.textureID);
-            glUniform1i(loc_mainTexture, 0);
+            glBindTexture(GL_TEXTURE_2D, faceObj.TextureId);
+            glUniform1i(LocMainTexture, 0);
         }
-        glBindVertexArray(faceObj.VAO);
-        glDrawElements(GL_TRIANGLES, faceObj.indexCount, GL_UNSIGNED_INT, 0);
+        glBindVertexArray(faceObj.Vao);
+        glDrawElements(GL_TRIANGLES, faceObj.IndexCount, GL_UNSIGNED_INT, 0);
 
         glBindVertexArray(0);
         };
     // -----------------------------------------------------------------------------------
 
-    // 1. 축 드로우
-    drawAxes();
-    // drawAxes에서 조명이 0.0이 되었으므로 다시 복원
-    glUniform1f(loc_lightIntensity, lightIntensity);
+
+    // ---------------------------- 배경 렌더링 ----------------------------
+	// 배경 오브젝트 렌더링 (Static Object)
+    glUniform1f(LocLightIntensity, 0.7f);
+    glDisable(GL_CULL_FACE);
+
+    // BackgroundObject 렌더링
+    glm::mat4 BackgroundModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -30.0f));
+    BackgroundModel = BackgroundModel * BackgroundObject.ModelMatrix;
+    Draw(BackgroundObject, BackgroundModel);
+
+    // BackgroundObject2 렌더링
+    glm::mat4 BackgroundMode2 = glm::translate(glm::mat4(1.0f), glm::vec3(30.0f, 0.0f, 0.0f));
+    BackgroundMode2 = BackgroundMode2 * BackgroundObject2.ModelMatrix;
+    Draw(BackgroundObject2, BackgroundMode2);
+
+    // BackgroundObject3 렌더링
+    glm::mat4 BackgroundMode3 = glm::translate(glm::mat4(1.0f), glm::vec3(-30.0f, 0.0f, 0.0f));
+    BackgroundMode3 = BackgroundMode3 * BackgroundObject3.ModelMatrix;
+    Draw(BackgroundObject3, BackgroundMode3);
+
+    glEnable(GL_CULL_FACE);
+    glUniform1f(LocLightIntensity, LightIntensity);
+
+    // 땅 렌더링 
+    glm::mat4 GroundMode = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+    GroundMode = GroundMode * GroundObject.ModelMatrix;
+    Draw(GroundObject, GroundMode);
 
 
-    // 2. 해머 오브젝트 드로우 (Rotatable Object)
-    const MultiTextureObject& activeObject = hammerObject;
+
+
+
+
+
+    // 2-2. 해머 오브젝트 렌더링 (Rotatable Object)
+    const MultiTextureObject& activeObject = HammerObject;
 
     // 회전 행렬 적용
-    glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(rotationAngle), glm::vec3(rx, ry, 0));
+    glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(RotationAngle), glm::vec3(Rx, Ry, 0));
 
     // 해머 모델 행렬 (스케일)과 회전 행렬을 결합
-    glm::mat4 rotatedModelMatrix = rotationMatrix * activeObject.modelMatrix;
+    glm::mat4 rotatedModelMatrix = rotationMatrix * activeObject.ModelMatrix;
 
-    // 해머를 약간 아래로 이동시켜 축의 중앙에 오도록 조정
+    // 최종 모델 행렬
     glm::mat4 finalModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)) * rotatedModelMatrix;
 
-    draw(activeObject, finalModelMatrix);
+    Draw(activeObject, finalModelMatrix);
 
     glutSwapBuffers();
 }
 
-// -------------------- 타이머 & 키보드 --------------------
-void timer(int) {
-    if (rotateObject) rotationAngle += 60.0f * 0.016f;
+// -------------------- 타이머 & 키보드 (Timer & Keyboard) --------------------
+void Timer(int) {
+    if (RotateObject) RotationAngle += 60.0f * 0.016f;
     glutPostRedisplay();
-    glutTimerFunc(16, timer, 0);
+    glutTimerFunc(16, Timer, 0);
 }
 
-void keyboard(unsigned char key, int, int) {
+void Keyboard(unsigned char key, int, int) {
     switch (key) {
-        // case 'c' (큐브), 'p' (피라미드) 키는 제거됨.
-    case 'x': rx = 1; ry = 0; break; // X축 회전 활성화
-    case 'y': rx = 0; ry = 1; break; // Y축 회전 활성화
+    case 'x': Rx = 1; Ry = 0; break; // X축 회전 활성화
+    case 'y': Rx = 0; Ry = 1; break; // Y축 회전 활성화
     case 's': {
         // 상태 초기화
-        rotateObject = true;
-        rotationAngle = 0.0f;
-        lightIntensity = 1.0f;
-        rx = 0, ry = 1;
+        RotateObject = true;
+        RotationAngle = 0.0f;
+        LightIntensity = 1.0f;
+        Rx = 0, Ry = 1;
         break;
     }
     case 'q':exit(0); break;
@@ -549,43 +762,54 @@ void keyboard(unsigned char key, int, int) {
     glutPostRedisplay();
 }
 
-
-// -------------------- 메인 (GLUT 초기화 포함) --------------------
+// -------------------- 메인 함수 (Main) --------------------
 int main(int argc, char** argv) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
     glutInitWindowSize(800, 800);
     glutCreateWindow("CG Single OBJ Renderer (Hammer)");
 
-    // 2. GLEW 초기화 (OpenGL 함수 포인터 로드)
+    // GLEW 초기화 (OpenGL 함수 포인터 로드)
     glewInit();
 
-    // 3. 셰이더 생성 및 유효성 검사 (오류 발생 시 프로그램 종료)
-    createShaderProgram();
-    if (shaderProgram == 0) {
+    // 셰이더 생성 및 유효성 검사 
+    CreateShaderProgram();
+    if (ShaderProgram == 0) {
         cerr << "프로그램 초기화 실패. 종료합니다." << endl;
         return -1;
     }
 
-    // 4. 텍스처 로드 (해머 OBJ는 보통 단일 텍스처를 사용)
-    //// "front.jpg" 파일이 해머의 텍스처로 사용됩니다.
-    hammerTextureIDs.push_back(loadTexture("right.jpg"));
+    // 텍스처 로드 
+    BackgroundTextureIds.push_back(LoadTexture("sky.jpg"));
+    Background2TextureIds.push_back(LoadTexture("sky.jpg"));
+    Background3TextureIds.push_back(LoadTexture("sky.jpg"));
 
-    // 5.1 축 생성
-    createAxes();
+    GroundTextureIds.push_back(LoadTexture("ground.jpg"));
 
-    // 5.2 오브젝트 생성
-    // hammer.obj 파일 로드 및 hammerObject에 저장
-    // 스케일은 1.0f로 유지합니다.
-    createMultiFaceObject(hammerObject, "hammer.obj", glm::vec3(1.0f), hammerTextureIDs);
+    HammerTextureIds.push_back(LoadTexture("right.jpg"));
 
-    // 6. 렌더링 설정 및 메인 루프 시작
+    // 축 생성
+    CreateAxes();
+
+    // ---- 오브젝트 생성 ----
+    // 환경 - (하늘)
+    CreateMultiFaceObject(BackgroundObject, "cube.obj", glm::vec3(50.0f, 50.0f, 0.1f), BackgroundTextureIds);
+    CreateMultiFaceObject(BackgroundObject2, "cube.obj", glm::vec3(0.1f, 50.0f, 50.0f), Background2TextureIds);
+    CreateMultiFaceObject(BackgroundObject3, "cube.obj", glm::vec3(0.1f, 50.0f, 50.0f), Background3TextureIds);
+
+    // 환경 - (땅)
+    CreateMultiFaceObject(GroundObject, "cube.obj", glm::vec3(50.0f, 0.1f, 50.0f), GroundTextureIds);
+
+    // 오브젝트 - (망치)
+    CreateMultiFaceObject(HammerObject, "hammer.obj", glm::vec3(1.0f), HammerTextureIds);
+
+    // 렌더링 설정 및 메인 루프 시작
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
-    
-    glutDisplayFunc(drawScene);
-    glutKeyboardFunc(keyboard);
-    glutTimerFunc(0, timer, 0);
+    glFrontFace(GL_CW);
+    glutDisplayFunc(DrawScene);
+    glutKeyboardFunc(Keyboard);
+    glutTimerFunc(0, Timer, 0);
     glutMainLoop();
     return 0;
 }
