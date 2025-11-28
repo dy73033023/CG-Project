@@ -49,11 +49,15 @@ GLint LocMainTexture = -1;
 // -- 땅 -- 
 MultiTextureObject GroundObject;
 
-// -- 하늘 -- 
+// -- 강 --
+MultiTextureObject RiverObject;
+
+// -- 구름 -- 
 MultiTextureObject CloudObject;
 
 // -- 나무 -- 
-
+MultiTextureObject TreeTrunkObject;
+MultiTextureObject TreeLeavesObject;
 
 // -- 망치 -- 
 MultiTextureObject HammerHeadObject;
@@ -62,10 +66,20 @@ MultiTextureObject HammerBody2Object;
 
 
 // 텍스처 ID들을 저장할 벡터
+// -- 땅 --
 std::vector<GLuint> GroundTextureIds;
 
+// -- 강 --
+std::vector<GLuint> RiverTextureIds;
+
+// -- 구름 --
 std::vector<GLuint> CloudTextureIds;
 
+// -- 나무 --
+std::vector<GLuint> TreeTrunkTextureIds;
+std::vector<GLuint> TreeLeavesTextureIds;
+
+// -- 망치 --
 std::vector<GLuint> HammerHeadTextureIds;
 std::vector<GLuint> HammerBodyTextureIds;
 std::vector<GLuint> HammerBody2TextureIds;
@@ -642,7 +656,7 @@ void DrawScene() {
     glClearColor(0.5f, 0.8f, 1.0f, 1.0f);
 
     // 카메라/뷰 설정 
-    glm::vec3 CameraPos = glm::vec3(0.0f, 10.0f, 45.0f);
+    glm::vec3 CameraPos = glm::vec3(0.0f, 15.0f, 60.0f);
 
     // View 행렬 조작 없이 일반 View 행렬 그대로 사용
     glm::mat4 View = glm::lookAt(CameraPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0, 1.0f, 0));
@@ -693,21 +707,34 @@ void DrawScene() {
 
     // ---------------------------- 배경 렌더링 ----------------------------
 	// 배경 오브젝트 렌더링 (Static Object)
-
-    glUniform1f(LocLightIntensity, 0.7f);
     // 땅 렌더링 
+    glUniform1f(LocLightIntensity, 0.7f); // 조명 세기 조절
     glm::mat4 GroundModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
     GroundModel = GroundModel * GroundObject.ModelMatrix;
     Draw(GroundObject, GroundModel);
 
-    glUniform1f(LocLightIntensity, 0.0f);
+    // 강 렌더링
+    glUniform1f(LocLightIntensity, 1.0f); // 조명 세기 조절
+    glm::mat4 RiverModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+    RiverModel = RiverModel * RiverObject.ModelMatrix;
+    Draw(RiverObject, RiverModel);
+    
     // 구름 렌더링
+    glUniform1f(LocLightIntensity, 0.0f);
     glm::mat4 CloudModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-    CloudModel = CloudModel * GroundObject.ModelMatrix;
+    CloudModel = CloudModel * CloudObject.ModelMatrix;
     Draw(CloudObject, CloudModel);
 
     // 나무 렌더링
-  
+    glUniform1f(LocLightIntensity, 1.0f);
+    glm::mat4 TreeTrunkModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+    TreeTrunkModel = TreeTrunkModel * TreeTrunkObject.ModelMatrix;
+    Draw(TreeTrunkObject, TreeTrunkModel);
+
+    glUniform1f(LocLightIntensity, 1.0f);
+    glm::mat4 TreeLeavesModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+    TreeLeavesModel = TreeLeavesModel * TreeLeavesObject.ModelMatrix;
+    Draw(TreeLeavesObject, TreeLeavesModel);
 
 
 
@@ -787,10 +814,15 @@ int main(int argc, char** argv) {
     // 환경 - (땅)
     GroundTextureIds.push_back(LoadTexture("Ground.jpg"));
 
-    // 환경 - (땅)
+    // 환경 - (강)
+    RiverTextureIds.push_back(LoadTexture("River.jpg"));
+
+    // 환경 - (구름)
     CloudTextureIds.push_back(LoadTexture("Cloud.jpg"));
 
     // 환경 - (나무)
+    TreeTrunkTextureIds.push_back(LoadTexture("TreeTrunk.jpg"));
+    TreeLeavesTextureIds.push_back(LoadTexture("TreeLeaves.jpg"));
 
 	// 오브젝트 - (망치)
     HammerHeadTextureIds.push_back(LoadTexture("HammerHead.jpg")); 
@@ -804,15 +836,21 @@ int main(int argc, char** argv) {
     // ---- 오브젝트 생성 ----
     // 환경 - (땅)
     CreateMultiFaceObject(GroundObject, "Ground.obj", glm::vec3(1.0f, 1.0f, 1.0f), GroundTextureIds);
+
+    // 환경 - (강)
+    CreateMultiFaceObject(RiverObject, "River.obj", glm::vec3(1.0f, 1.0f, 1.0f), RiverTextureIds);
+
     // 환경 - (구름)
-    CreateMultiFaceObject(CloudObject, "Cloud.obj", glm::vec3(50.0f, 50.0f, 0.1f), CloudTextureIds);
+    CreateMultiFaceObject(CloudObject, "Cloud.obj", glm::vec3(1.0f, 1.0f, 1.0f), CloudTextureIds);
 
     // 환경 - (나무)
+	CreateMultiFaceObject(TreeTrunkObject, "TreeTrunk.obj", glm::vec3(1.0f), TreeTrunkTextureIds);
+	CreateMultiFaceObject(TreeLeavesObject, "TreeLeaves.obj", glm::vec3(1.0f), TreeLeavesTextureIds);
 
     // 오브젝트 - (망치)
-    CreateMultiFaceObject(HammerHeadObject, "HammerHead.obj", glm::vec3(1.0f), HammerHeadTextureIds);
-	CreateMultiFaceObject(HammerBodyObject, "HammerBody.obj", glm::vec3(1.0f), HammerBodyTextureIds);
-    CreateMultiFaceObject(HammerBody2Object, "HammerBody2.obj", glm::vec3(1.0f), HammerBody2TextureIds);
+    CreateMultiFaceObject(HammerHeadObject, "HammerHead.obj", glm::vec3(0.3f), HammerHeadTextureIds);
+	CreateMultiFaceObject(HammerBodyObject, "HammerBody.obj", glm::vec3(0.3f), HammerBodyTextureIds);
+    CreateMultiFaceObject(HammerBody2Object, "HammerBody2.obj", glm::vec3(0.3f), HammerBody2TextureIds);
 
     // 렌더링 설정 및 메인 루프 시작
     glEnable(GL_DEPTH_TEST);
