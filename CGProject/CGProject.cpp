@@ -46,25 +46,29 @@ GLint LocObjectColor = -1, LocHasTexture = -1, LocLightPos = -1, LocLightColor =
 GLint LocMainTexture = -1;
 
 // 객체 렌더링 정보
-// -- 하늘 -- 
-MultiTextureObject BackgroundObject;
-MultiTextureObject BackgroundObject2;
-MultiTextureObject BackgroundObject3;
-
 // -- 땅 -- 
 MultiTextureObject GroundObject;
 
+// -- 하늘 -- 
+MultiTextureObject CloudObject;
+
+// -- 나무 -- 
+
+
 // -- 망치 -- 
-MultiTextureObject HammerObject;
+MultiTextureObject HammerHeadObject;
+MultiTextureObject HammerBodyObject;
+MultiTextureObject HammerBody2Object;
+
 
 // 텍스처 ID들을 저장할 벡터
-std::vector<GLuint> BackgroundTextureIds;
-std::vector<GLuint> Background2TextureIds;
-std::vector<GLuint> Background3TextureIds;
-
 std::vector<GLuint> GroundTextureIds;
 
-std::vector<GLuint> HammerTextureIds;
+std::vector<GLuint> CloudTextureIds;
+
+std::vector<GLuint> HammerHeadTextureIds;
+std::vector<GLuint> HammerBodyTextureIds;
+std::vector<GLuint> HammerBody2TextureIds;
 
 // 축 VAO
 GLuint AxesVao = 0;
@@ -75,15 +79,11 @@ GLuint AxesVao = 0;
 bool RotateObject = true;
 float RotationAngle = 0.0f;
 float LightIntensity = 1.0f;
-glm::vec3 LightPos = glm::vec3(5.0f, 8.0f, 5.0f);
-glm::vec3 ViewPos = glm::vec3(0.0f, 3.0f, 10.0f);
+glm::vec3 LightPos = glm::vec3(0.0f, 50.0f, 50.0f);
 
 // 회전 축
 float Rx = 0, Ry = 1;
 // -----------------------------------------------------
-
-
-
 
 
 
@@ -190,6 +190,9 @@ GLuint LoadTexture(const char* path) {
     std::cout << "텍스처 로드 성공: " << path << std::endl;
     return textureId;
 }
+
+
+
 
 // -------------------- 파일 리더 (File Reader) --------------------
 string ReadFile(const string& path) {
@@ -636,9 +639,10 @@ void DrawScene() {
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glUseProgram(ShaderProgram);
+    glClearColor(0.5f, 0.8f, 1.0f, 1.0f);
 
     // 카메라/뷰 설정 
-    glm::vec3 CameraPos = glm::vec3(0.0f, 10.0f, 30.0f);
+    glm::vec3 CameraPos = glm::vec3(0.0f, 10.0f, 45.0f);
 
     // View 행렬 조작 없이 일반 View 행렬 그대로 사용
     glm::mat4 View = glm::lookAt(CameraPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0, 1.0f, 0));
@@ -689,51 +693,51 @@ void DrawScene() {
 
     // ---------------------------- 배경 렌더링 ----------------------------
 	// 배경 오브젝트 렌더링 (Static Object)
+
     glUniform1f(LocLightIntensity, 0.7f);
-    glDisable(GL_CULL_FACE);
-
-    // BackgroundObject 렌더링
-    glm::mat4 BackgroundModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -30.0f));
-    BackgroundModel = BackgroundModel * BackgroundObject.ModelMatrix;
-    Draw(BackgroundObject, BackgroundModel);
-
-    // BackgroundObject2 렌더링
-    glm::mat4 BackgroundMode2 = glm::translate(glm::mat4(1.0f), glm::vec3(30.0f, 0.0f, 0.0f));
-    BackgroundMode2 = BackgroundMode2 * BackgroundObject2.ModelMatrix;
-    Draw(BackgroundObject2, BackgroundMode2);
-
-    // BackgroundObject3 렌더링
-    glm::mat4 BackgroundMode3 = glm::translate(glm::mat4(1.0f), glm::vec3(-30.0f, 0.0f, 0.0f));
-    BackgroundMode3 = BackgroundMode3 * BackgroundObject3.ModelMatrix;
-    Draw(BackgroundObject3, BackgroundMode3);
-
-    glEnable(GL_CULL_FACE);
-    glUniform1f(LocLightIntensity, LightIntensity);
-
     // 땅 렌더링 
-    glm::mat4 GroundMode = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-    GroundMode = GroundMode * GroundObject.ModelMatrix;
-    Draw(GroundObject, GroundMode);
+    glm::mat4 GroundModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+    GroundModel = GroundModel * GroundObject.ModelMatrix;
+    Draw(GroundObject, GroundModel);
+
+    glUniform1f(LocLightIntensity, 0.0f);
+    // 구름 렌더링
+    glm::mat4 CloudModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+    CloudModel = CloudModel * GroundObject.ModelMatrix;
+    Draw(CloudObject, CloudModel);
+
+    // 나무 렌더링
+  
 
 
 
+    glUniform1f(LocLightIntensity, 1.0f);
+    // 망치 렌더링 (Rotatable Object)
+    // --------------------------------------------------------------------------------------------------------------
+    const MultiTextureObject& activeObject = HammerHeadObject;
+	const MultiTextureObject& activeObject2 = HammerBodyObject;
+	const MultiTextureObject& activeObject3 = HammerBody2Object;
 
+    glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(RotationAngle), glm::vec3(0.0f, 1.0f, 0));
 
-
-
-    // 2-2. 해머 오브젝트 렌더링 (Rotatable Object)
-    const MultiTextureObject& activeObject = HammerObject;
-
-    // 회전 행렬 적용
-    glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(RotationAngle), glm::vec3(Rx, Ry, 0));
-
-    // 해머 모델 행렬 (스케일)과 회전 행렬을 결합
     glm::mat4 rotatedModelMatrix = rotationMatrix * activeObject.ModelMatrix;
+    glm::mat4 rotatedModelMatrix2 = rotationMatrix * activeObject2.ModelMatrix;
+    glm::mat4 rotatedModelMatrix3 = rotationMatrix * activeObject3.ModelMatrix;
 
-    // 최종 모델 행렬
     glm::mat4 finalModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)) * rotatedModelMatrix;
+    glm::mat4 finalModelMatrix2 = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)) * rotatedModelMatrix2;
+    glm::mat4 finalModelMatrix3 = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)) * rotatedModelMatrix3;
 
     Draw(activeObject, finalModelMatrix);
+    Draw(activeObject2, finalModelMatrix2);
+    Draw(activeObject3, finalModelMatrix3);
+    // --------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
 
     glutSwapBuffers();
 }
@@ -767,7 +771,7 @@ int main(int argc, char** argv) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
     glutInitWindowSize(800, 800);
-    glutCreateWindow("CG Single OBJ Renderer (Hammer)");
+    glutCreateWindow("CGProject");
 
     // GLEW 초기화 (OpenGL 함수 포인터 로드)
     glewInit();
@@ -780,28 +784,35 @@ int main(int argc, char** argv) {
     }
 
     // 텍스처 로드 
-    BackgroundTextureIds.push_back(LoadTexture("sky.jpg"));
-    Background2TextureIds.push_back(LoadTexture("sky.jpg"));
-    Background3TextureIds.push_back(LoadTexture("sky.jpg"));
+    // 환경 - (땅)
+    GroundTextureIds.push_back(LoadTexture("Ground.jpg"));
 
-    GroundTextureIds.push_back(LoadTexture("ground.jpg"));
+    // 환경 - (땅)
+    CloudTextureIds.push_back(LoadTexture("Cloud.jpg"));
 
-    HammerTextureIds.push_back(LoadTexture("right.jpg"));
+    // 환경 - (나무)
+
+	// 오브젝트 - (망치)
+    HammerHeadTextureIds.push_back(LoadTexture("HammerHead.jpg")); 
+    HammerBodyTextureIds.push_back(LoadTexture("HammerBody.jpg"));
+    HammerBody2TextureIds.push_back(LoadTexture("HammerBody2.jpg"));
+
 
     // 축 생성
     CreateAxes();
 
     // ---- 오브젝트 생성 ----
-    // 환경 - (하늘)
-    CreateMultiFaceObject(BackgroundObject, "cube.obj", glm::vec3(50.0f, 50.0f, 0.1f), BackgroundTextureIds);
-    CreateMultiFaceObject(BackgroundObject2, "cube.obj", glm::vec3(0.1f, 50.0f, 50.0f), Background2TextureIds);
-    CreateMultiFaceObject(BackgroundObject3, "cube.obj", glm::vec3(0.1f, 50.0f, 50.0f), Background3TextureIds);
-
     // 환경 - (땅)
-    CreateMultiFaceObject(GroundObject, "cube.obj", glm::vec3(50.0f, 0.1f, 50.0f), GroundTextureIds);
+    CreateMultiFaceObject(GroundObject, "Ground.obj", glm::vec3(1.0f, 1.0f, 1.0f), GroundTextureIds);
+    // 환경 - (구름)
+    CreateMultiFaceObject(CloudObject, "Cloud.obj", glm::vec3(50.0f, 50.0f, 0.1f), CloudTextureIds);
+
+    // 환경 - (나무)
 
     // 오브젝트 - (망치)
-    CreateMultiFaceObject(HammerObject, "hammer.obj", glm::vec3(1.0f), HammerTextureIds);
+    CreateMultiFaceObject(HammerHeadObject, "HammerHead.obj", glm::vec3(1.0f), HammerHeadTextureIds);
+	CreateMultiFaceObject(HammerBodyObject, "HammerBody.obj", glm::vec3(1.0f), HammerBodyTextureIds);
+    CreateMultiFaceObject(HammerBody2Object, "HammerBody2.obj", glm::vec3(1.0f), HammerBody2TextureIds);
 
     // 렌더링 설정 및 메인 루프 시작
     glEnable(GL_DEPTH_TEST);
