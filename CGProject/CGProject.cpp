@@ -59,6 +59,12 @@ MultiTextureObject CloudObject;
 MultiTextureObject TreeTrunkObject;
 MultiTextureObject TreeLeavesObject;
 
+// -- 잔디 --
+MultiTextureObject GrassObject;
+
+// -- 두더지 굴 --
+MultiTextureObject HoleObject;
+
 // -- 망치 -- 
 MultiTextureObject HammerHeadObject;
 MultiTextureObject HammerBodyObject;
@@ -79,6 +85,12 @@ std::vector<GLuint> CloudTextureIds;
 std::vector<GLuint> TreeTrunkTextureIds;
 std::vector<GLuint> TreeLeavesTextureIds;
 
+// -- 잔디 --
+std::vector<GLuint> GrassTextureIds;
+
+// -- 두더지 굴 --
+std::vector<GLuint> HoleTextureIds;
+
 // -- 망치 --
 std::vector<GLuint> HammerHeadTextureIds;
 std::vector<GLuint> HammerBodyTextureIds;
@@ -94,6 +106,8 @@ bool RotateObject = true;
 float RotationAngle = 0.0f;
 float LightIntensity = 1.0f;
 glm::vec3 LightPos = glm::vec3(0.0f, 50.0f, 50.0f);
+
+float CameraPosZ = 60.0f;
 
 // 회전 축
 float Rx = 0, Ry = 1;
@@ -656,7 +670,7 @@ void DrawScene() {
     glClearColor(0.5f, 0.8f, 1.0f, 1.0f);
 
     // 카메라/뷰 설정 
-    glm::vec3 CameraPos = glm::vec3(0.0f, 15.0f, 60.0f);
+    glm::vec3 CameraPos = glm::vec3(0.0f, 15.0f, CameraPosZ);
 
     // View 행렬 조작 없이 일반 View 행렬 그대로 사용
     glm::mat4 View = glm::lookAt(CameraPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0, 1.0f, 0));
@@ -736,7 +750,17 @@ void DrawScene() {
     TreeLeavesModel = TreeLeavesModel * TreeLeavesObject.ModelMatrix;
     Draw(TreeLeavesObject, TreeLeavesModel);
 
+    // 잔디 렌더링
+    glUniform1f(LocLightIntensity, 1.0f);
+    glm::mat4 GrassModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+    GrassModel = GrassModel * GrassObject.ModelMatrix;
+    Draw(GrassObject, GrassModel);
 
+	// 두더지 굴 렌더링
+    glUniform1f(LocLightIntensity, 1.0f);
+    glm::mat4 HoleModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+    HoleModel = HoleModel * HoleObject.ModelMatrix;
+    Draw(HoleObject, HoleModel);
 
     glUniform1f(LocLightIntensity, 1.0f);
     // 망치 렌더링 (Rotatable Object)
@@ -778,9 +802,18 @@ void Timer(int) {
 
 void Keyboard(unsigned char key, int, int) {
     switch (key) {
+    case'w':
+        // 디버그 용도 카메라 앞 이동
+		CameraPosZ -= 2.0f;
+        break;
+    case's':
+        // 디버그 용도 카메라 뒤 이동
+        CameraPosZ += 2.0f;
+        break;
+
     case 'x': Rx = 1; Ry = 0; break; // X축 회전 활성화
     case 'y': Rx = 0; Ry = 1; break; // Y축 회전 활성화
-    case 's': {
+    case 'c': {
         // 상태 초기화
         RotateObject = true;
         RotationAngle = 0.0f;
@@ -824,6 +857,12 @@ int main(int argc, char** argv) {
     TreeTrunkTextureIds.push_back(LoadTexture("TreeTrunk.jpg"));
     TreeLeavesTextureIds.push_back(LoadTexture("TreeLeaves.jpg"));
 
+    // 환경 - (잔디)
+    GrassTextureIds.push_back(LoadTexture("Grass.jpg"));
+
+    // 환경 - (두더지 굴)
+	HoleTextureIds.push_back(LoadTexture("Hole.jpg"));
+
 	// 오브젝트 - (망치)
     HammerHeadTextureIds.push_back(LoadTexture("HammerHead.jpg")); 
     HammerBodyTextureIds.push_back(LoadTexture("HammerBody.jpg"));
@@ -846,6 +885,12 @@ int main(int argc, char** argv) {
     // 환경 - (나무)
 	CreateMultiFaceObject(TreeTrunkObject, "TreeTrunk.obj", glm::vec3(1.0f), TreeTrunkTextureIds);
 	CreateMultiFaceObject(TreeLeavesObject, "TreeLeaves.obj", glm::vec3(1.0f), TreeLeavesTextureIds);
+
+    // 환경 - (잔디)
+    CreateMultiFaceObject(GrassObject, "Grass.obj", glm::vec3(1.0f), GrassTextureIds);
+    
+    // 환경 - (두더지 굴)
+    CreateMultiFaceObject(HoleObject, "Hole.obj", glm::vec3(1.0f), HoleTextureIds);
 
     // 오브젝트 - (망치)
     CreateMultiFaceObject(HammerHeadObject, "HammerHead.obj", glm::vec3(0.3f), HammerHeadTextureIds);
