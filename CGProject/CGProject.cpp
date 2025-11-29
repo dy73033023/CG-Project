@@ -65,6 +65,12 @@ MultiTextureObject GrassObject;
 // -- 두더지 굴 --
 MultiTextureObject HoleObject;
 
+// -- 돌 --
+MultiTextureObject StoneObject;
+
+// -- 울타리 -- 
+MultiTextureObject FenceObject;
+
 // -- 망치 -- 
 MultiTextureObject HammerHeadObject;
 MultiTextureObject HammerBodyObject;
@@ -90,6 +96,12 @@ std::vector<GLuint> GrassTextureIds;
 
 // -- 두더지 굴 --
 std::vector<GLuint> HoleTextureIds;
+
+// -- 돌 --
+std::vector<GLuint> StoneTextureIds;
+
+// -- 울타리 -- 
+std::vector<GLuint> FenceTextureIds;
 
 // -- 망치 --
 std::vector<GLuint> HammerHeadTextureIds;
@@ -762,6 +774,19 @@ void DrawScene() {
     HoleModel = HoleModel * HoleObject.ModelMatrix;
     Draw(HoleObject, HoleModel);
 
+
+	// 돌 렌더링
+    glUniform1f(LocLightIntensity, 1.0f);
+    glm::mat4 StoneModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+    StoneModel = StoneModel * StoneObject.ModelMatrix;
+    Draw(StoneObject, StoneModel);
+
+    // 울타리 렌더링
+    glUniform1f(LocLightIntensity, 1.0f);
+    glm::mat4 FenceModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+    FenceModel = FenceModel * FenceObject.ModelMatrix;
+    Draw(FenceObject, FenceModel);
+
     glUniform1f(LocLightIntensity, 1.0f);
     // 망치 렌더링 (Rotatable Object)
     // --------------------------------------------------------------------------------------------------------------
@@ -863,6 +888,12 @@ int main(int argc, char** argv) {
     // 환경 - (두더지 굴)
 	HoleTextureIds.push_back(LoadTexture("Hole.jpg"));
 
+    // 환경 - (돌)
+	StoneTextureIds.push_back(LoadTexture("Stone.jpg"));
+
+    // 환경 - (울타리)
+	FenceTextureIds.push_back(LoadTexture("Fence.jpg"));
+
 	// 오브젝트 - (망치)
     HammerHeadTextureIds.push_back(LoadTexture("HammerHead.jpg")); 
     HammerBodyTextureIds.push_back(LoadTexture("HammerBody.jpg"));
@@ -891,6 +922,12 @@ int main(int argc, char** argv) {
     
     // 환경 - (두더지 굴)
     CreateMultiFaceObject(HoleObject, "Hole.obj", glm::vec3(1.0f), HoleTextureIds);
+
+	// 환경 - (돌)
+	CreateMultiFaceObject(StoneObject, "Stone.obj", glm::vec3(1.0f), StoneTextureIds);
+
+    // 환경 - (울타리)
+    CreateMultiFaceObject(FenceObject, "Fence.obj", glm::vec3(1.0f), FenceTextureIds);
 
     // 오브젝트 - (망치)
     CreateMultiFaceObject(HammerHeadObject, "HammerHead.obj", glm::vec3(0.3f), HammerHeadTextureIds);
