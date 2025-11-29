@@ -77,6 +77,10 @@ MultiTextureObject EmptyObject2;
 MultiTextureObject EmptyObject3;
 MultiTextureObject EmptyObject4;
 
+// -- 망치 -- (나무 컨셉)
+MultiTextureObject WoodenHammerObject;
+MultiTextureObject WoodenHammer2Object;
+
 // -- 망치 -- (악마 컨셉)
 MultiTextureObject DemonHammerObject;
 MultiTextureObject DemonHammer2Object;
@@ -115,6 +119,10 @@ std::vector<GLuint> StoneTextureIds;
 std::vector<GLuint> FenceTextureIds;
 
 // -- 망치 --
+// -- 나무 --
+std::vector<GLuint> WoodenHammerTextureIds;
+std::vector<GLuint> WoodenHammer2TextureIds;
+
 // -- 악마 --
 std::vector<GLuint> DemonHammerTextureIds;
 std::vector<GLuint> DemonHammer2TextureIds;
@@ -171,7 +179,7 @@ bool hammerUp = false;
 // 마우스 입력시 해머 회전 적용 변수
 GLfloat modelhammerRZ = 0.0f;
 // -----------------------------------------------------
-int HammerChoice = -1; // 선택된 해머 없음 1.악마 망치 2.보석 박혀있는 망치 3.~
+int HammerChoice = 0; // 0. 초기 선택x  1.악마 망치  2.보석 박혀있는 망치  3.~
 
 
 
@@ -657,7 +665,7 @@ void DrawScene() {
 
     // View 행렬 조작 없이 일반 View 행렬 그대로 사용
     glm::mat4 View = glm::lookAt(CameraPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0, 1.0f, 0));
-    glm::mat4 Projection = glm::perspective(glm::radians(45.0f), (float)800 / 800, 0.1f, 1000.0f);
+    glm::mat4 Projection = glm::perspective(glm::radians(45.0f), (float)1200 / 800, 0.1f, 1000.0f);
 
     glUniformMatrix4fv(LocView, 1, GL_FALSE, glm::value_ptr(View));
     glUniformMatrix4fv(LocProjection, 1, GL_FALSE, glm::value_ptr(Projection));
@@ -763,11 +771,15 @@ void DrawScene() {
     };
 
     if (HammerChoice == 1) {
+        HammerParts[0] = &WoodenHammerObject;
+        HammerParts[1] = &WoodenHammer2Object;
+    }
+    else if (HammerChoice == 2) {
         HammerParts[0] = &DemonHammerObject;
         HammerParts[1] = &DemonHammer2Object;
         HammerParts[2] = &DemonHammer3Object;
     }
-    else if (HammerChoice == 2) {
+    else if (HammerChoice == 3) {
         HammerParts[0] = &PickaxeObject;
         HammerParts[1] = &Pickaxe2Object;
         HammerParts[2] = &Pickaxe3Object;
@@ -828,9 +840,9 @@ void Keyboard(unsigned char key, int, int) {
     // 프로젝트 내에서 실제로 구현하는 기능들
     
     // 망치 선택 기능
-    case'1': HammerChoice = 1; break; // 악마 망치 선택
-    case'2': HammerChoice = 2; break; // 보석 박혀있는 망치 선택 
-	case'3': HammerChoice = 3; break; // 추가 구현 예정..
+    case'1': HammerChoice = 1; break; // 나무 망치 선택
+    case'2': HammerChoice = 2; break; // 악마 망치 선택
+	case'3': HammerChoice = 3; break; // 보석 박혀있는 망치 선택 
 
 
 
@@ -893,7 +905,7 @@ void DoMotion(GLint x, GLint y) {
 int main(int argc, char** argv) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
-    glutInitWindowSize(800, 800);
+    glutInitWindowSize(1200, 800);
     glutCreateWindow("CGProject");
 
     // GLEW 초기화 (OpenGL 함수 포인터 로드)
@@ -933,6 +945,10 @@ int main(int argc, char** argv) {
 	FenceTextureIds.push_back(LoadTexture("Fence.jpg"));
 
 	// 오브젝트 - (망치)
+    // -- 나무 --
+    WoodenHammerTextureIds.push_back(LoadTexture("WoodenHammer.jpg"));
+    WoodenHammer2TextureIds.push_back(LoadTexture("WoodenHammer2.jpg"));
+
     // -- 악마 --
     DemonHammerTextureIds.push_back(LoadTexture("DemonHammer.jpg"));
     DemonHammer2TextureIds.push_back(LoadTexture("DemonHammer2.jpg"));
@@ -971,6 +987,10 @@ int main(int argc, char** argv) {
     CreateMultiFaceObject(FenceObject, "Fence.obj", glm::vec3(1.0f), FenceTextureIds);
 
     // 오브젝트 - (망치) 
+    // -- 나무 --
+    CreateMultiFaceObject(WoodenHammerObject, "WoodenHammer.obj", glm::vec3(1.0f), WoodenHammerTextureIds);
+    CreateMultiFaceObject(WoodenHammer2Object, "WoodenHammer2.obj", glm::vec3(1.0f), WoodenHammer2TextureIds);
+
     // -- 악마 --
     CreateMultiFaceObject(DemonHammerObject, "DemonHammer.obj", glm::vec3(1.0f), DemonHammerTextureIds);
 	CreateMultiFaceObject(DemonHammer2Object, "DemonHammer2.obj", glm::vec3(1.0f), DemonHammer2TextureIds);
@@ -982,6 +1002,7 @@ int main(int argc, char** argv) {
     CreateMultiFaceObject(Pickaxe3Object, "Pickaxe3.obj", glm::vec3(1.0f), Pickaxe3TextureIds);
     CreateMultiFaceObject(Pickaxe4Object, "Pickaxe4.obj", glm::vec3(1.0f), Pickaxe4TextureIds);
 
+    
     // 렌더링 설정 및 메인 루프 시작
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
