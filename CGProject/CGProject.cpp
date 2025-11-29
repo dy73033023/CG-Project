@@ -71,10 +71,10 @@ MultiTextureObject StoneObject;
 // -- 울타리 -- 
 MultiTextureObject FenceObject;
 
-// -- 망치 -- 
-MultiTextureObject HammerHeadObject;
-MultiTextureObject HammerBodyObject;
-MultiTextureObject HammerBody2Object;
+// -- 망치 -- (악마 컨셉)
+MultiTextureObject DemonHammerObject;
+MultiTextureObject DemonHammer2Object;
+MultiTextureObject DemonHammer3Object;
 
 
 // 텍스처 ID들을 저장할 벡터
@@ -104,9 +104,10 @@ std::vector<GLuint> StoneTextureIds;
 std::vector<GLuint> FenceTextureIds;
 
 // -- 망치 --
-std::vector<GLuint> HammerHeadTextureIds;
-std::vector<GLuint> HammerBodyTextureIds;
-std::vector<GLuint> HammerBody2TextureIds;
+// -- 악마 --
+std::vector<GLuint> DemonHammerTextureIds;
+std::vector<GLuint> DemonHammer2TextureIds;
+std::vector<GLuint> DemonHammer3TextureIds;
 
 // 축 VAO
 GLuint AxesVao = 0;
@@ -790,9 +791,9 @@ void DrawScene() {
     glUniform1f(LocLightIntensity, 1.0f);
     // 망치 렌더링 (Rotatable Object)
     // --------------------------------------------------------------------------------------------------------------
-    const MultiTextureObject& activeObject = HammerHeadObject;
-	const MultiTextureObject& activeObject2 = HammerBodyObject;
-	const MultiTextureObject& activeObject3 = HammerBody2Object;
+    const MultiTextureObject& activeObject = DemonHammerObject;
+	const MultiTextureObject& activeObject2 = DemonHammer2Object;
+	const MultiTextureObject& activeObject3 = DemonHammer3Object;
 
     glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(RotationAngle), glm::vec3(0.0f, 1.0f, 0));
 
@@ -895,9 +896,9 @@ int main(int argc, char** argv) {
 	FenceTextureIds.push_back(LoadTexture("Fence.jpg"));
 
 	// 오브젝트 - (망치)
-    HammerHeadTextureIds.push_back(LoadTexture("HammerHead.jpg")); 
-    HammerBodyTextureIds.push_back(LoadTexture("HammerBody.jpg"));
-    HammerBody2TextureIds.push_back(LoadTexture("HammerBody2.jpg"));
+    DemonHammerTextureIds.push_back(LoadTexture("DemonHammer.jpg"));
+    DemonHammer2TextureIds.push_back(LoadTexture("DemonHammer2.jpg"));
+    DemonHammer3TextureIds.push_back(LoadTexture("DemonHammer3.jpg"));
 
 
     // 축 생성
@@ -929,10 +930,10 @@ int main(int argc, char** argv) {
     // 환경 - (울타리)
     CreateMultiFaceObject(FenceObject, "Fence.obj", glm::vec3(1.0f), FenceTextureIds);
 
-    // 오브젝트 - (망치)
-    CreateMultiFaceObject(HammerHeadObject, "HammerHead.obj", glm::vec3(0.3f), HammerHeadTextureIds);
-	CreateMultiFaceObject(HammerBodyObject, "HammerBody.obj", glm::vec3(0.3f), HammerBodyTextureIds);
-    CreateMultiFaceObject(HammerBody2Object, "HammerBody2.obj", glm::vec3(0.3f), HammerBody2TextureIds);
+    // 오브젝트 - (망치) - 악마 컨셉
+    CreateMultiFaceObject(DemonHammerObject, "DemonHammer.obj", glm::vec3(1.0f), DemonHammerTextureIds);
+	CreateMultiFaceObject(DemonHammer2Object, "DemonHammer2.obj", glm::vec3(1.0f), DemonHammer2TextureIds);
+    CreateMultiFaceObject(DemonHammer3Object, "DemonHammer3.obj", glm::vec3(1.0f), DemonHammer3TextureIds);
 
     // 렌더링 설정 및 메인 루프 시작
     glEnable(GL_DEPTH_TEST);
