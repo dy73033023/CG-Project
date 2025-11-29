@@ -40,7 +40,7 @@ struct MultiTextureObject {
 // -------------------- Àü¿ª º¯¼ö (Global Variables) --------------------
 std::random_device rd;
 std::mt19937 gen(rd());
-std::uniform_int_distribution<> Mole(1, 2);
+std::uniform_int_distribution<> Mole(1, 3);
 
 GLuint ShaderProgram = 0;
 
@@ -108,6 +108,16 @@ MultiTextureObject GoldenMoleNoseObject; // ÄÚ
 MultiTextureObject GoldenMoleNoseTipObject; // ÄÚ ³¡
 MultiTextureObject GoldenMoleCoinObject; // ÄÚÀÎ
 
+// -- µÎ´õÁö -- (ÆøÅº)
+MultiTextureObject BombMoleBodyAndHandObject; // ¸öÅë°ú ¼Õ
+MultiTextureObject BombMoleEyeAndMustacheObject; // ´«°ú Äà¼ö¿°
+MultiTextureObject BombMoleNailObject; // ¼ÕÅé
+MultiTextureObject BombMoleNoseObject; // ÄÚ
+MultiTextureObject BombMoleNoseTipObject; // ÄÚ ³¡
+MultiTextureObject BombMoleBombObject; // ÆøÅº
+MultiTextureObject BombMoleFuseObject; // µµÈ­¼±
+MultiTextureObject BombMoleXmarkObject; // ÆøÅº X ¸¶Å©
+
 // ÅØ½ºÃ³ IDµéÀ» ÀúÀåÇÒ º¤ÅÍ
 // -- ¶¥ --
 std::vector<GLuint> GroundTextureIds;
@@ -152,18 +162,29 @@ std::vector<GLuint> Pickaxe4TextureIds;
 
 // -- µÎ´õÁö -- (±âº»)
 std::vector<GLuint> MoleBodyAndHandTextureIds; // ¸öÅë°ú ¼Õ
-std::vector<GLuint> MoleNailTextureIds; // ¼ÕÅé
 std::vector<GLuint> MoleEyeAndMustacheTextureIds; // ´«°ú Äà¼ö¿°
+std::vector<GLuint> MoleNailTextureIds; // ¼ÕÅé
 std::vector<GLuint> MoleNoseTextureIds; // ÄÚ
 std::vector<GLuint> MoleNoseTipTextureIds; // ÄÚ ³¡
 
 // -- µÎ´õÁö -- (È²±Ý)
 std::vector<GLuint> GoldenMoleBodyAndHandTextureIds; // ¸öÅë°ú ¼Õ
-std::vector<GLuint> GoldenMoleNailTextureIds; // ¼ÕÅé
 std::vector<GLuint> GoldenMoleEyeAndMustacheTextureIds; // ´«°ú Äà¼ö¿°
+std::vector<GLuint> GoldenMoleNailTextureIds; // ¼ÕÅé
 std::vector<GLuint> GoldenMoleNoseTextureIds; // ÄÚ
 std::vector<GLuint> GoldenMoleNoseTipTextureIds; // ÄÚ ³¡
 std::vector<GLuint> GoldenMoleCoinTextureIds; // ÄÚÀÎ
+
+// -- µÎ´õÁö -- (ÆøÅº)
+std::vector<GLuint> BombMoleBodyAndHandTextureIds; // ¸öÅë°ú ¼Õ
+std::vector<GLuint> BombMoleEyeAndMustacheTextureIds; // ´«°ú Äà¼ö¿°
+std::vector<GLuint> BombMoleNailTextureIds; // ¼ÕÅé
+std::vector<GLuint> BombMoleNoseTextureIds; // ÄÚ
+std::vector<GLuint> BombMoleNoseTipTextureIds; // ÄÚ ³¡
+std::vector<GLuint> BombMoleBombTextureIds; // ÆøÅº
+std::vector<GLuint> BombMoleFuseTextureIds; // µµÈ­¼±
+std::vector<GLuint> BombMoleXmarkTextureIds; // ÆøÅº X ¸¶Å©
+
 
 // Ãà VAO
 GLuint AxesVao = 0;
@@ -834,9 +855,10 @@ void DrawScene() {
     }
 
     // µÎ´õÁö ·»´õ¸µ
-    MultiTextureObject* MoleParts[6] = {
-        &EmptyObject,&EmptyObject,&EmptyObject,&EmptyObject,&EmptyObject, &EmptyObject
-	};
+    MultiTextureObject* MoleParts[8] = {
+        &EmptyObject,&EmptyObject,&EmptyObject,&EmptyObject,&EmptyObject,&EmptyObject,&EmptyObject,&EmptyObject
+
+    };
 
     if (MoleChoice == 1) {
         MoleParts[0] = &MoleBodyAndHandObject;
@@ -853,13 +875,23 @@ void DrawScene() {
         MoleParts[4] = &GoldenMoleNoseTipObject;
         MoleParts[5] = &GoldenMoleCoinObject;
     }
+    else if (MoleChoice == 3) {
+        MoleParts[0] = &BombMoleBodyAndHandObject;
+        MoleParts[1] = &BombMoleEyeAndMustacheObject;
+        MoleParts[2] = &BombMoleNailObject;
+        MoleParts[3] = &BombMoleNoseObject;
+        MoleParts[4] = &BombMoleNoseTipObject;
+		MoleParts[5] = &BombMoleBombObject;
+        MoleParts[6] = &BombMoleFuseObject;
+		MoleParts[7] = &BombMoleXmarkObject;
+    }
 
-    for (int i = 0; i < 6; ++i) {
+    for (int i = 0; i < 8; ++i) {
         MultiTextureObject* CurrentObject = MoleParts[i];
 
         if (CurrentObject->Faces.empty()) continue;
         
-        glm::mat4 FinalModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)) * CurrentObject->ModelMatrix;
+        glm::mat4 FinalModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 2.0f, 0.0f)) * CurrentObject->ModelMatrix;
 
         Draw(*CurrentObject, FinalModelMatrix);
     }
@@ -1043,6 +1075,16 @@ int main(int argc, char** argv) {
     GoldenMoleNoseTipTextureIds.push_back(LoadTexture("GoldenMoleNoseTip.jpg"));
     GoldenMoleCoinTextureIds.push_back(LoadTexture("GoldenMoleCoin.jpg"));
 
+	// -- ÆøÅº --
+	BombMoleBodyAndHandTextureIds.push_back(LoadTexture("MoleBodyAndHand.jpg"));
+	BombMoleEyeAndMustacheTextureIds.push_back(LoadTexture("MoleEyeAndMustache.jpg"));
+	BombMoleNailTextureIds.push_back(LoadTexture("MoleNail.jpg"));
+	BombMoleNoseTextureIds.push_back(LoadTexture("MoleNose.jpg"));
+	BombMoleNoseTipTextureIds.push_back(LoadTexture("MoleNoseTip.jpg"));
+	BombMoleBombTextureIds.push_back(LoadTexture("BombMoleBomb.jpg"));
+	BombMoleFuseTextureIds.push_back(LoadTexture("BombMoleFuse.jpg"));
+	BombMoleXmarkTextureIds.push_back(LoadTexture("BombMoleXmark.jpg"));
+
 	// -----------------------------------------------------
     
 
@@ -1108,6 +1150,17 @@ int main(int argc, char** argv) {
     CreateMultiFaceObject(GoldenMoleNoseTipObject, "MoleNoseTip.obj", glm::vec3(0.5f), GoldenMoleNoseTipTextureIds);
     CreateMultiFaceObject(GoldenMoleCoinObject, "GoldenMoleCoin.obj", glm::vec3(0.5f), GoldenMoleCoinTextureIds);
 
+	// -- ÆøÅº --
+	CreateMultiFaceObject(BombMoleBodyAndHandObject, "MoleBodyAndHand2.obj", glm::vec3(0.5f), BombMoleBodyAndHandTextureIds);
+	CreateMultiFaceObject(BombMoleEyeAndMustacheObject, "MoleEyeAndMustache.obj", glm::vec3(0.5f), BombMoleEyeAndMustacheTextureIds);
+	CreateMultiFaceObject(BombMoleNailObject, "MoleNail2.obj", glm::vec3(0.5f), BombMoleNailTextureIds);
+	CreateMultiFaceObject(BombMoleNoseObject, "MoleNose.obj", glm::vec3(0.5f), BombMoleNoseTextureIds);
+	CreateMultiFaceObject(BombMoleNoseTipObject, "MoleNoseTip.obj", glm::vec3(0.5f), BombMoleNoseTipTextureIds);
+	CreateMultiFaceObject(BombMoleBombObject, "BombMoleBomb.obj", glm::vec3(0.5f), BombMoleBombTextureIds);
+	CreateMultiFaceObject(BombMoleFuseObject, "BombMoleFuse.obj", glm::vec3(0.5f), BombMoleFuseTextureIds);
+	CreateMultiFaceObject(BombMoleXmarkObject, "BombMoleXmark.obj", glm::vec3(0.5f), BombMoleXmarkTextureIds);
+
+    // --------------------------------------------------------
     // ·»´õ¸µ ¼³Á¤ ¹× ¸ÞÀÎ ·çÇÁ ½ÃÀÛ
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
