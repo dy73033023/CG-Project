@@ -35,7 +35,7 @@ struct MultiTextureObject {
     std::vector<FaceRenderObject> Faces;
     glm::mat4 ModelMatrix = glm::mat4(1.0f);
 };
-
+// -----------------------------------------------------------
 
 // -------------------- 전역 변수 (Global Variables) --------------------
 GLuint ShaderProgram = 0;
@@ -71,11 +71,22 @@ MultiTextureObject StoneObject;
 // -- 울타리 -- 
 MultiTextureObject FenceObject;
 
+// -- 망치 -- (초기 상태 : 아무 정보도 없음)
+MultiTextureObject EmptyObject;
+MultiTextureObject EmptyObject2;
+MultiTextureObject EmptyObject3;
+MultiTextureObject EmptyObject4;
+
 // -- 망치 -- (악마 컨셉)
 MultiTextureObject DemonHammerObject;
 MultiTextureObject DemonHammer2Object;
 MultiTextureObject DemonHammer3Object;
 
+// -- 망치 -- (보석 박혀있는 컨셉)
+MultiTextureObject PickaxeObject;
+MultiTextureObject Pickaxe2Object;
+MultiTextureObject Pickaxe3Object;
+MultiTextureObject Pickaxe4Object;
 
 // 텍스처 ID들을 저장할 벡터
 // -- 땅 --
@@ -108,6 +119,12 @@ std::vector<GLuint> FenceTextureIds;
 std::vector<GLuint> DemonHammerTextureIds;
 std::vector<GLuint> DemonHammer2TextureIds;
 std::vector<GLuint> DemonHammer3TextureIds;
+
+// -- 보석 박혀있는 망치 --
+std::vector<GLuint> PickaxeTextureIds;
+std::vector<GLuint> Pickaxe2TextureIds;
+std::vector<GLuint> Pickaxe3TextureIds;
+std::vector<GLuint> Pickaxe4TextureIds;
 
 // 축 VAO
 GLuint AxesVao = 0;
@@ -153,7 +170,8 @@ bool hammerDown = false;
 bool hammerUp = false;
 // 마우스 입력시 해머 회전 적용 변수
 GLfloat modelhammerRZ = 0.0f;
-
+// -----------------------------------------------------
+int HammerChoice = -1; // 선택된 해머 없음 1.악마 망치 2.보석 박혀있는 망치 3.~
 
 
 
@@ -493,81 +511,6 @@ bool LoadObj(const char* path,
     return !vertices.empty();
 }
 
-//// -------------------- 축 렌더링 초기화 함수 (Axes Init) --------------------
-//void CreateAxes() {
-//    // X, Y, Z 축의 시작점(0,0,0)과 끝점(10, 0, 0 등)을 정의합니다. (위치 3개만 사용)
-//    GLfloat axesVertices[] = {
-//        // X-axis (Red)
-//         -10.0f,  0.0f,  0.0f,
-//          10.0f,  0.0f,  0.0f,
-//          // Y-axis (Green)
-//           0.0f,  -10.0f,  0.0f,
-//           0.0f,  10.0f,  0.0f,
-//           // Z-axis (Blue)
-//            0.0f,  0.0f,  -10.0f,
-//            0.0f,  0.0f, 10.0f
-//    };
-//
-//    GLuint axesVbo;
-//    glGenVertexArrays(1, &AxesVao);
-//    glGenBuffers(1, &axesVbo);
-//
-//    glBindVertexArray(AxesVao);
-//
-//    glBindBuffer(GL_ARRAY_BUFFER, axesVbo);
-//    glBufferData(GL_ARRAY_BUFFER, sizeof(axesVertices), axesVertices, GL_STATIC_DRAW);
-//
-//    // Position attribute (location 0)만 사용합니다.
-//    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-//    glEnableVertexAttribArray(0);
-//
-//    // 다른 속성(UV, 법선)은 사용하지 않으므로 비활성화합니다.
-//    glDisableVertexAttribArray(1);
-//    glDisableVertexAttribArray(2);
-//
-//    glBindVertexArray(0);
-//    glBindBuffer(GL_ARRAY_BUFFER, 0);
-//}
-//
-//// -------------------- 축 렌더링 함수 (Draw Axes) --------------------
-//void DrawAxes() {
-//    if (AxesVao == 0) return;
-//
-//    // 1. Model Matrix: 축은 고정되어 있으므로 Identity 행렬을 사용합니다.
-//    glm::mat4 identityModel = glm::mat4(1.0f);
-//    glUniformMatrix4fv(LocModel, 1, GL_FALSE, glm::value_ptr(identityModel));
-//
-//    // 2. 텍스처와 조명을 임시로 비활성화하여 순수한 색상으로 출력합니다.
-//    glUniform1i(LocHasTexture, 0);
-//    glUniform1f(LocLightIntensity, 0.0f);
-//
-//    // 3. 선의 두께 설정
-//    GLfloat originalLineWidth;
-//    glGetFloatv(GL_LINE_WIDTH, &originalLineWidth); // 기존 두께 저장
-//    glLineWidth(3.0f);
-//
-//    glBindVertexArray(AxesVao);
-//
-//    // X-axis (Red)
-//    glUniform3f(LocObjectColor, 1.0f, 0.0f, 0.0f);
-//    glDrawArrays(GL_LINES, 0, 2);
-//
-//    // Y-axis (Green)
-//    glUniform3f(LocObjectColor, 0.0f, 1.0f, 0.0f);
-//    glDrawArrays(GL_LINES, 2, 2);
-//
-//    // Z-axis (Blue)
-//    glUniform3f(LocObjectColor, 0.0f, 0.0f, 1.0f);
-//    glDrawArrays(GL_LINES, 4, 2);
-//
-//    glBindVertexArray(0);
-//
-//    // 4. 원래 상태로 복원
-//    glUniform1f(LocLightIntensity, LightIntensity); // 원래 조명 세기로 복원
-//    glLineWidth(originalLineWidth); // 선 두께 복원
-//    glUniform3f(LocObjectColor, 1.0f, 1.0f, 1.0f); // 오브젝트 색상 기본값 복원
-//}
-
 // ------------------- 다중 면 오브젝트 생성 (Create Object) -------------------
 void CreateMultiFaceObject(MultiTextureObject& mobj, const string& objPath, const glm::vec3& scale,
     const std::vector<GLuint>& textureIds)
@@ -810,38 +753,42 @@ void DrawScene() {
     Draw(FenceObject, FenceModel);
 
     glUniform1f(LocLightIntensity, 1.0f);
-    // 망치 렌더링 (Rotatable Object)
-   // --------------------------------------------------------------------------------------------------------------
-    const MultiTextureObject& activeObject = DemonHammerObject;
-    const MultiTextureObject& activeObject2 = DemonHammer2Object;
-    const MultiTextureObject& activeObject3 = DemonHammer3Object;
+    // --------------------------------------------------------------------------------------------------------------
 
-    /* glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(RotationAngle), glm::vec3(0.0f, 1.0f, 0));*/
 
-    glm::mat4 rotatedModelMatrix = activeObject.ModelMatrix;
-    glm::mat4 rotatedModelMatrix2 = activeObject2.ModelMatrix;
-    glm::mat4 rotatedModelMatrix3 = activeObject3.ModelMatrix;
+    // 오브젝트 렌더링 (Rotatable Object)
+    // 망치 렌더링
+    MultiTextureObject* HammerParts[4] = {
+        &EmptyObject, &EmptyObject, &EmptyObject, &EmptyObject
+    };
 
-    // 회전 행렬 적용
-    rotatedModelMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(modelhammerRZ), glm::vec3(0, 0, 1)) * rotatedModelMatrix;
-    rotatedModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(modelMoveTY, 0.0f, -modelMoveTX)) * rotatedModelMatrix;
-    rotatedModelMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0, 1, 0)) * rotatedModelMatrix;
+    if (HammerChoice == 1) {
+        HammerParts[0] = &DemonHammerObject;
+        HammerParts[1] = &DemonHammer2Object;
+        HammerParts[2] = &DemonHammer3Object;
+    }
+    else if (HammerChoice == 2) {
+        HammerParts[0] = &PickaxeObject;
+        HammerParts[1] = &Pickaxe2Object;
+        HammerParts[2] = &Pickaxe3Object;
+        HammerParts[3] = &Pickaxe4Object;
+	}
+	
+    for (int i = 0; i < 4; ++i) {
+        MultiTextureObject* CurrentObject = HammerParts[i];
 
-    rotatedModelMatrix2 = glm::rotate(glm::mat4(1.0f), glm::radians(modelhammerRZ), glm::vec3(0, 0, 1)) * rotatedModelMatrix2;
-    rotatedModelMatrix2 = glm::translate(glm::mat4(1.0f), glm::vec3(modelMoveTY, 0.0f, -modelMoveTX)) * rotatedModelMatrix2;
-    rotatedModelMatrix2 = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0, 1, 0)) * rotatedModelMatrix2;
+        if (CurrentObject->Faces.empty()) continue;
 
-    rotatedModelMatrix3 = glm::rotate(glm::mat4(1.0f), glm::radians(modelhammerRZ), glm::vec3(0, 0, 1)) * rotatedModelMatrix3;
-    rotatedModelMatrix3 = glm::translate(glm::mat4(1.0f), glm::vec3(modelMoveTY, 0.0f, -modelMoveTX)) * rotatedModelMatrix3;
-    rotatedModelMatrix3 = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0, 1, 0)) * rotatedModelMatrix3;
+        glm::mat4 RotatedModelMatrix = CurrentObject->ModelMatrix;
 
-    glm::mat4 finalModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)) * rotatedModelMatrix;
-    glm::mat4 finalModelMatrix2 = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)) * rotatedModelMatrix2;
-    glm::mat4 finalModelMatrix3 = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)) * rotatedModelMatrix3;
+        RotatedModelMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(modelhammerRZ), glm::vec3(0, 0, 1)) * RotatedModelMatrix;
+        RotatedModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(modelMoveTY, 0.0f, -modelMoveTX)) * RotatedModelMatrix;
+        RotatedModelMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0, 1, 0)) * RotatedModelMatrix;
 
-    Draw(activeObject, finalModelMatrix);
-    Draw(activeObject2, finalModelMatrix2);
-    Draw(activeObject3, finalModelMatrix3);
+        glm::mat4 FinalModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)) * RotatedModelMatrix;
+
+        Draw(*CurrentObject, FinalModelMatrix);
+    }
     // --------------------------------------------------------------------------------------------------------------
 
 
@@ -878,26 +825,31 @@ void Timer(int) {
 
 void Keyboard(unsigned char key, int, int) {
     switch (key) {
+    // 프로젝트 내에서 실제로 구현하는 기능들
+    
+    // 망치 선택 기능
+    case'1': HammerChoice = 1; break; // 악마 망치 선택
+    case'2': HammerChoice = 2; break; // 보석 박혀있는 망치 선택 
+	case'3': HammerChoice = 3; break; // 추가 구현 예정..
+
+
+
+
+
+
+
+
+    // 디버그 용도 기능들
     case'w':
-        // 디버그 용도 카메라 앞 이동
+        // 카메라 앞 이동
 		CameraPosZ -= 2.0f;
         break;
     case's':
-        // 디버그 용도 카메라 뒤 이동
+        // 카메라 뒤 이동
         CameraPosZ += 2.0f;
         break;
-
-    case 'x': Rx = 1; Ry = 0; break; // X축 회전 활성화
-    case 'y': Rx = 0; Ry = 1; break; // Y축 회전 활성화
-    case 'c': {
-        // 상태 초기화
-        RotateObject = true;
-        RotationAngle = 0.0f;
-        LightIntensity = 1.0f;
-        Rx = 0, Ry = 1;
+    case 'q':exit(0); 
         break;
-    }
-    case 'q':exit(0); break;
     }
     glutPostRedisplay();
 }
@@ -986,6 +938,12 @@ int main(int argc, char** argv) {
     DemonHammer2TextureIds.push_back(LoadTexture("DemonHammer2.jpg"));
     DemonHammer3TextureIds.push_back(LoadTexture("DemonHammer3.jpg"));
 
+    // -- 보석 --
+    PickaxeTextureIds.push_back(LoadTexture("Pickaxe.jpg"));
+    Pickaxe2TextureIds.push_back(LoadTexture("Pickaxe2.jpg"));
+    Pickaxe3TextureIds.push_back(LoadTexture("Pickaxe3.jpg"));
+    Pickaxe4TextureIds.push_back(LoadTexture("Pickaxe4.jpg"));
+
     // ---- 오브젝트 생성 ----
     // 환경 - (땅)
     CreateMultiFaceObject(GroundObject, "Ground.obj", glm::vec3(1.0f, 1.0f, 1.0f), GroundTextureIds);
@@ -1017,6 +975,12 @@ int main(int argc, char** argv) {
     CreateMultiFaceObject(DemonHammerObject, "DemonHammer.obj", glm::vec3(1.0f), DemonHammerTextureIds);
 	CreateMultiFaceObject(DemonHammer2Object, "DemonHammer2.obj", glm::vec3(1.0f), DemonHammer2TextureIds);
     CreateMultiFaceObject(DemonHammer3Object, "DemonHammer3.obj", glm::vec3(1.0f), DemonHammer3TextureIds);
+
+	// -- 보석 박혀있는 망치 --
+    CreateMultiFaceObject(PickaxeObject, "Pickaxe.obj", glm::vec3(1.0f), PickaxeTextureIds);
+    CreateMultiFaceObject(Pickaxe2Object, "Pickaxe2.obj", glm::vec3(1.0f), Pickaxe2TextureIds);
+    CreateMultiFaceObject(Pickaxe3Object, "Pickaxe3.obj", glm::vec3(1.0f), Pickaxe3TextureIds);
+    CreateMultiFaceObject(Pickaxe4Object, "Pickaxe4.obj", glm::vec3(1.0f), Pickaxe4TextureIds);
 
     // 렌더링 설정 및 메인 루프 시작
     glEnable(GL_DEPTH_TEST);
