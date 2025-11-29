@@ -493,80 +493,80 @@ bool LoadObj(const char* path,
     return !vertices.empty();
 }
 
-// -------------------- 축 렌더링 초기화 함수 (Axes Init) --------------------
-void CreateAxes() {
-    // X, Y, Z 축의 시작점(0,0,0)과 끝점(10, 0, 0 등)을 정의합니다. (위치 3개만 사용)
-    GLfloat axesVertices[] = {
-        // X-axis (Red)
-         -10.0f,  0.0f,  0.0f,
-          10.0f,  0.0f,  0.0f,
-          // Y-axis (Green)
-           0.0f,  -10.0f,  0.0f,
-           0.0f,  10.0f,  0.0f,
-           // Z-axis (Blue)
-            0.0f,  0.0f,  -10.0f,
-            0.0f,  0.0f, 10.0f
-    };
-
-    GLuint axesVbo;
-    glGenVertexArrays(1, &AxesVao);
-    glGenBuffers(1, &axesVbo);
-
-    glBindVertexArray(AxesVao);
-
-    glBindBuffer(GL_ARRAY_BUFFER, axesVbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(axesVertices), axesVertices, GL_STATIC_DRAW);
-
-    // Position attribute (location 0)만 사용합니다.
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    // 다른 속성(UV, 법선)은 사용하지 않으므로 비활성화합니다.
-    glDisableVertexAttribArray(1);
-    glDisableVertexAttribArray(2);
-
-    glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
-
-// -------------------- 축 렌더링 함수 (Draw Axes) --------------------
-void DrawAxes() {
-    if (AxesVao == 0) return;
-
-    // 1. Model Matrix: 축은 고정되어 있으므로 Identity 행렬을 사용합니다.
-    glm::mat4 identityModel = glm::mat4(1.0f);
-    glUniformMatrix4fv(LocModel, 1, GL_FALSE, glm::value_ptr(identityModel));
-
-    // 2. 텍스처와 조명을 임시로 비활성화하여 순수한 색상으로 출력합니다.
-    glUniform1i(LocHasTexture, 0);
-    glUniform1f(LocLightIntensity, 0.0f);
-
-    // 3. 선의 두께 설정
-    GLfloat originalLineWidth;
-    glGetFloatv(GL_LINE_WIDTH, &originalLineWidth); // 기존 두께 저장
-    glLineWidth(3.0f);
-
-    glBindVertexArray(AxesVao);
-
-    // X-axis (Red)
-    glUniform3f(LocObjectColor, 1.0f, 0.0f, 0.0f);
-    glDrawArrays(GL_LINES, 0, 2);
-
-    // Y-axis (Green)
-    glUniform3f(LocObjectColor, 0.0f, 1.0f, 0.0f);
-    glDrawArrays(GL_LINES, 2, 2);
-
-    // Z-axis (Blue)
-    glUniform3f(LocObjectColor, 0.0f, 0.0f, 1.0f);
-    glDrawArrays(GL_LINES, 4, 2);
-
-    glBindVertexArray(0);
-
-    // 4. 원래 상태로 복원
-    glUniform1f(LocLightIntensity, LightIntensity); // 원래 조명 세기로 복원
-    glLineWidth(originalLineWidth); // 선 두께 복원
-    glUniform3f(LocObjectColor, 1.0f, 1.0f, 1.0f); // 오브젝트 색상 기본값 복원
-}
+//// -------------------- 축 렌더링 초기화 함수 (Axes Init) --------------------
+//void CreateAxes() {
+//    // X, Y, Z 축의 시작점(0,0,0)과 끝점(10, 0, 0 등)을 정의합니다. (위치 3개만 사용)
+//    GLfloat axesVertices[] = {
+//        // X-axis (Red)
+//         -10.0f,  0.0f,  0.0f,
+//          10.0f,  0.0f,  0.0f,
+//          // Y-axis (Green)
+//           0.0f,  -10.0f,  0.0f,
+//           0.0f,  10.0f,  0.0f,
+//           // Z-axis (Blue)
+//            0.0f,  0.0f,  -10.0f,
+//            0.0f,  0.0f, 10.0f
+//    };
+//
+//    GLuint axesVbo;
+//    glGenVertexArrays(1, &AxesVao);
+//    glGenBuffers(1, &axesVbo);
+//
+//    glBindVertexArray(AxesVao);
+//
+//    glBindBuffer(GL_ARRAY_BUFFER, axesVbo);
+//    glBufferData(GL_ARRAY_BUFFER, sizeof(axesVertices), axesVertices, GL_STATIC_DRAW);
+//
+//    // Position attribute (location 0)만 사용합니다.
+//    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+//    glEnableVertexAttribArray(0);
+//
+//    // 다른 속성(UV, 법선)은 사용하지 않으므로 비활성화합니다.
+//    glDisableVertexAttribArray(1);
+//    glDisableVertexAttribArray(2);
+//
+//    glBindVertexArray(0);
+//    glBindBuffer(GL_ARRAY_BUFFER, 0);
+//}
+//
+//// -------------------- 축 렌더링 함수 (Draw Axes) --------------------
+//void DrawAxes() {
+//    if (AxesVao == 0) return;
+//
+//    // 1. Model Matrix: 축은 고정되어 있으므로 Identity 행렬을 사용합니다.
+//    glm::mat4 identityModel = glm::mat4(1.0f);
+//    glUniformMatrix4fv(LocModel, 1, GL_FALSE, glm::value_ptr(identityModel));
+//
+//    // 2. 텍스처와 조명을 임시로 비활성화하여 순수한 색상으로 출력합니다.
+//    glUniform1i(LocHasTexture, 0);
+//    glUniform1f(LocLightIntensity, 0.0f);
+//
+//    // 3. 선의 두께 설정
+//    GLfloat originalLineWidth;
+//    glGetFloatv(GL_LINE_WIDTH, &originalLineWidth); // 기존 두께 저장
+//    glLineWidth(3.0f);
+//
+//    glBindVertexArray(AxesVao);
+//
+//    // X-axis (Red)
+//    glUniform3f(LocObjectColor, 1.0f, 0.0f, 0.0f);
+//    glDrawArrays(GL_LINES, 0, 2);
+//
+//    // Y-axis (Green)
+//    glUniform3f(LocObjectColor, 0.0f, 1.0f, 0.0f);
+//    glDrawArrays(GL_LINES, 2, 2);
+//
+//    // Z-axis (Blue)
+//    glUniform3f(LocObjectColor, 0.0f, 0.0f, 1.0f);
+//    glDrawArrays(GL_LINES, 4, 2);
+//
+//    glBindVertexArray(0);
+//
+//    // 4. 원래 상태로 복원
+//    glUniform1f(LocLightIntensity, LightIntensity); // 원래 조명 세기로 복원
+//    glLineWidth(originalLineWidth); // 선 두께 복원
+//    glUniform3f(LocObjectColor, 1.0f, 1.0f, 1.0f); // 오브젝트 색상 기본값 복원
+//}
 
 // ------------------- 다중 면 오브젝트 생성 (Create Object) -------------------
 void CreateMultiFaceObject(MultiTextureObject& mobj, const string& objPath, const glm::vec3& scale,
@@ -727,12 +727,6 @@ void DrawScene() {
     // 기본 objectColor 설정
     glUniform3f(LocObjectColor, 1.0f, 1.0f, 1.0f);
     glUniform1f(LocLightIntensity, LightIntensity); // 일반 조명 세기 설정
-
-    // 축 드로우
-    DrawAxes();
-    glUniform1f(LocLightIntensity, LightIntensity);
-
-
 
     // -------------------- 통합 렌더링 람다 함수 (Draw Logic) --------------------
     auto Draw = [&](const MultiTextureObject& mobj, const glm::mat4& modelMatrix) {
@@ -925,7 +919,7 @@ void DoMouse(GLint button, GLint state, GLint x, GLint y) {
 void DoMotion(GLint x, GLint y) {
     if (bArcball == GL_TRUE) {
         float deltaX = (float)(x - preCursorX);
-        float deltaY = (float)(preCursorY - y);
+        float deltaY = (float)(y - preCursorY);
 
         // 감도 조절
         float sensitivity = 0.1f;
@@ -991,10 +985,6 @@ int main(int argc, char** argv) {
     DemonHammerTextureIds.push_back(LoadTexture("DemonHammer.jpg"));
     DemonHammer2TextureIds.push_back(LoadTexture("DemonHammer2.jpg"));
     DemonHammer3TextureIds.push_back(LoadTexture("DemonHammer3.jpg"));
-
-
-    // 축 생성
-    CreateAxes();
 
     // ---- 오브젝트 생성 ----
     // 환경 - (땅)
