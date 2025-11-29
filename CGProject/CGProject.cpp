@@ -14,13 +14,13 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <random>
 #include <algorithm>
 #include "stb_image.h"
 using namespace std;
 using namespace glm;
 
 // -------------------- 구조체 (Structs) --------------------
-
 // 면 하나의 렌더링 정보 (FaceRenderObject) - 단일 메쉬를 위해 하나만 사용됨
 struct FaceRenderObject {
     GLuint Vao = 0;
@@ -38,6 +38,10 @@ struct MultiTextureObject {
 // -----------------------------------------------------------
 
 // -------------------- 전역 변수 (Global Variables) --------------------
+std::random_device rd;
+std::mt19937 gen(rd());
+std::uniform_int_distribution<> Mole(1, 2);
+
 GLuint ShaderProgram = 0;
 
 // Uniform 위치 캐시 (Loc: Location)
@@ -71,11 +75,8 @@ MultiTextureObject StoneObject;
 // -- 울타리 -- 
 MultiTextureObject FenceObject;
 
-// -- 망치 -- (초기 상태 : 아무 정보도 없음)
+// 렌더링에 사용되지 않는 빈 오브젝트
 MultiTextureObject EmptyObject;
-MultiTextureObject EmptyObject2;
-MultiTextureObject EmptyObject3;
-MultiTextureObject EmptyObject4;
 
 // -- 망치 -- (나무 컨셉)
 MultiTextureObject WoodenHammerObject;
@@ -91,6 +92,21 @@ MultiTextureObject PickaxeObject;
 MultiTextureObject Pickaxe2Object;
 MultiTextureObject Pickaxe3Object;
 MultiTextureObject Pickaxe4Object;
+
+// -- 두더지 -- (기본)
+MultiTextureObject MoleBodyAndHandObject; // 몸통과 손
+MultiTextureObject MoleEyeAndMustacheObject; // 눈과 콧수염
+MultiTextureObject MoleNailObject; // 손톱
+MultiTextureObject MoleNoseObject; // 코
+MultiTextureObject MoleNoseTipObject; // 코 끝
+
+// -- 두더지 -- (황금)
+MultiTextureObject GoldenMoleBodyAndHandObject; // 몸통과 손
+MultiTextureObject GoldenMoleEyeAndMustacheObject; // 눈과 콧수염
+MultiTextureObject GoldenMoleNailObject; // 손톱
+MultiTextureObject GoldenMoleNoseObject; // 코
+MultiTextureObject GoldenMoleNoseTipObject; // 코 끝
+MultiTextureObject GoldenMoleCoinObject; // 코인
 
 // 텍스처 ID들을 저장할 벡터
 // -- 땅 --
@@ -133,6 +149,21 @@ std::vector<GLuint> PickaxeTextureIds;
 std::vector<GLuint> Pickaxe2TextureIds;
 std::vector<GLuint> Pickaxe3TextureIds;
 std::vector<GLuint> Pickaxe4TextureIds;
+
+// -- 두더지 -- (기본)
+std::vector<GLuint> MoleBodyAndHandTextureIds; // 몸통과 손
+std::vector<GLuint> MoleNailTextureIds; // 손톱
+std::vector<GLuint> MoleEyeAndMustacheTextureIds; // 눈과 콧수염
+std::vector<GLuint> MoleNoseTextureIds; // 코
+std::vector<GLuint> MoleNoseTipTextureIds; // 코 끝
+
+// -- 두더지 -- (황금)
+std::vector<GLuint> GoldenMoleBodyAndHandTextureIds; // 몸통과 손
+std::vector<GLuint> GoldenMoleNailTextureIds; // 손톱
+std::vector<GLuint> GoldenMoleEyeAndMustacheTextureIds; // 눈과 콧수염
+std::vector<GLuint> GoldenMoleNoseTextureIds; // 코
+std::vector<GLuint> GoldenMoleNoseTipTextureIds; // 코 끝
+std::vector<GLuint> GoldenMoleCoinTextureIds; // 코인
 
 // 축 VAO
 GLuint AxesVao = 0;
@@ -179,8 +210,8 @@ bool hammerUp = false;
 // 마우스 입력시 해머 회전 적용 변수
 GLfloat modelhammerRZ = 0.0f;
 // -----------------------------------------------------
-int HammerChoice = 0; // 0. 초기 선택x  1.악마 망치  2.보석 박혀있는 망치  3.~
-
+int HammerChoice = 0; // 0. 초기 선택x  1.나무 망치  2.악마 망치  3.보석 망치
+int MoleChoice = 0; // 0. 초기 선택x  1.기본 두더지  2.~
 
 
 
@@ -801,6 +832,37 @@ void DrawScene() {
 
         Draw(*CurrentObject, FinalModelMatrix);
     }
+
+    // 두더지 렌더링
+    MultiTextureObject* MoleParts[6] = {
+        &EmptyObject,&EmptyObject,&EmptyObject,&EmptyObject,&EmptyObject, &EmptyObject
+	};
+
+    if (MoleChoice == 1) {
+        MoleParts[0] = &MoleBodyAndHandObject;
+        MoleParts[1] = &MoleEyeAndMustacheObject;
+        MoleParts[2] = &MoleNailObject;
+        MoleParts[3] = &MoleNoseObject;
+		MoleParts[4] = &MoleNoseTipObject;
+    }
+    else if (MoleChoice == 2) {
+        MoleParts[0] = &GoldenMoleBodyAndHandObject;
+        MoleParts[1] = &GoldenMoleEyeAndMustacheObject;
+        MoleParts[2] = &GoldenMoleNailObject;
+        MoleParts[3] = &GoldenMoleNoseObject;
+        MoleParts[4] = &GoldenMoleNoseTipObject;
+        MoleParts[5] = &GoldenMoleCoinObject;
+    }
+
+    for (int i = 0; i < 6; ++i) {
+        MultiTextureObject* CurrentObject = MoleParts[i];
+
+        if (CurrentObject->Faces.empty()) continue;
+        
+        glm::mat4 FinalModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)) * CurrentObject->ModelMatrix;
+
+        Draw(*CurrentObject, FinalModelMatrix);
+    }
     // --------------------------------------------------------------------------------------------------------------
 
 
@@ -843,7 +905,11 @@ void Keyboard(unsigned char key, int, int) {
     case'1': HammerChoice = 1; break; // 나무 망치 선택
     case'2': HammerChoice = 2; break; // 악마 망치 선택
 	case'3': HammerChoice = 3; break; // 보석 박혀있는 망치 선택 
-
+    
+    // 두더지 랜덤
+    case'r': MoleChoice = Mole(gen); break;// 기본 두더지 선택
+        
+        
 
 
 
@@ -918,7 +984,7 @@ int main(int argc, char** argv) {
         return -1;
     }
 
-    // 텍스처 로드 
+    // -- 텍스처 로드 --
     // 환경 - (땅)
     GroundTextureIds.push_back(LoadTexture("Ground.jpg"));
 
@@ -959,8 +1025,28 @@ int main(int argc, char** argv) {
     Pickaxe2TextureIds.push_back(LoadTexture("Pickaxe2.jpg"));
     Pickaxe3TextureIds.push_back(LoadTexture("Pickaxe3.jpg"));
     Pickaxe4TextureIds.push_back(LoadTexture("Pickaxe4.jpg"));
+	// -----------------------------------------------------
+    
+	// 오브젝트 - (두더지)
+    // -- 기본 --
+	MoleBodyAndHandTextureIds.push_back(LoadTexture("MoleBodyAndHand.jpg"));
+	MoleEyeAndMustacheTextureIds.push_back(LoadTexture("MoleEyeAndMustache.jpg"));
+	MoleNailTextureIds.push_back(LoadTexture("MoleNail.jpg"));
+	MoleNoseTextureIds.push_back(LoadTexture("MoleNose.jpg"));
+	MoleNoseTipTextureIds.push_back(LoadTexture("MoleNoseTip.jpg"));
 
-    // ---- 오브젝트 생성 ----
+    // -- 황금 --
+    GoldenMoleBodyAndHandTextureIds.push_back(LoadTexture("GoldenMoleBodyAndHand.jpg"));
+    GoldenMoleEyeAndMustacheTextureIds.push_back(LoadTexture("MoleEyeAndMustache.jpg"));
+    GoldenMoleNailTextureIds.push_back(LoadTexture("MoleNail.jpg"));
+    GoldenMoleNoseTextureIds.push_back(LoadTexture("GoldenMoleNose.jpg"));
+    GoldenMoleNoseTipTextureIds.push_back(LoadTexture("GoldenMoleNoseTip.jpg"));
+    GoldenMoleCoinTextureIds.push_back(LoadTexture("GoldenMoleCoin.jpg"));
+
+	// -----------------------------------------------------
+    
+
+    // -- 오브젝트 생성 --
     // 환경 - (땅)
     CreateMultiFaceObject(GroundObject, "Ground.obj", glm::vec3(1.0f, 1.0f, 1.0f), GroundTextureIds);
 
@@ -985,6 +1071,8 @@ int main(int argc, char** argv) {
 
     // 환경 - (울타리)
     CreateMultiFaceObject(FenceObject, "Fence.obj", glm::vec3(1.0f), FenceTextureIds);
+	// -----------------------------------------------------
+    
 
     // 오브젝트 - (망치) 
     // -- 나무 --
@@ -1001,8 +1089,25 @@ int main(int argc, char** argv) {
     CreateMultiFaceObject(Pickaxe2Object, "Pickaxe2.obj", glm::vec3(1.0f), Pickaxe2TextureIds);
     CreateMultiFaceObject(Pickaxe3Object, "Pickaxe3.obj", glm::vec3(1.0f), Pickaxe3TextureIds);
     CreateMultiFaceObject(Pickaxe4Object, "Pickaxe4.obj", glm::vec3(1.0f), Pickaxe4TextureIds);
-
+	// -----------------------------------------------------
     
+
+    // 오브젝트 - (두더지)
+    // -- 기본 --
+	CreateMultiFaceObject(MoleBodyAndHandObject, "MoleBodyAndHand.obj", glm::vec3(0.5f), MoleBodyAndHandTextureIds);
+	CreateMultiFaceObject(MoleEyeAndMustacheObject, "MoleEyeAndMustache.obj", glm::vec3(0.5f), MoleEyeAndMustacheTextureIds);
+	CreateMultiFaceObject(MoleNailObject, "MoleNail.obj", glm::vec3(0.5f), MoleNailTextureIds);
+	CreateMultiFaceObject(MoleNoseObject, "MoleNose.obj", glm::vec3(0.5f), MoleNoseTextureIds);
+	CreateMultiFaceObject(MoleNoseTipObject, "MoleNoseTip.obj", glm::vec3(0.5f), MoleNoseTipTextureIds);
+
+    // -- 황금 --
+    CreateMultiFaceObject(GoldenMoleBodyAndHandObject, "MoleBodyAndHand2.obj", glm::vec3(0.5f), GoldenMoleBodyAndHandTextureIds);
+    CreateMultiFaceObject(GoldenMoleEyeAndMustacheObject, "MoleEyeAndMustache.obj", glm::vec3(0.5f), GoldenMoleEyeAndMustacheTextureIds);
+    CreateMultiFaceObject(GoldenMoleNailObject, "MoleNail2.obj", glm::vec3(0.5f), GoldenMoleNailTextureIds);
+    CreateMultiFaceObject(GoldenMoleNoseObject, "MoleNose.obj", glm::vec3(0.5f), GoldenMoleNoseTextureIds);
+    CreateMultiFaceObject(GoldenMoleNoseTipObject, "MoleNoseTip.obj", glm::vec3(0.5f), GoldenMoleNoseTipTextureIds);
+    CreateMultiFaceObject(GoldenMoleCoinObject, "GoldenMoleCoin.obj", glm::vec3(0.5f), GoldenMoleCoinTextureIds);
+
     // 렌더링 설정 및 메인 루프 시작
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
