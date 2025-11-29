@@ -1,0 +1,45 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\user\\Desktop\\\uCEF4\uD4E8\uD130 \uADF8\uB798\uD53D\uC2A4\\\uC131\uC8FC_git\\CG-Project\\CGProject\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{E93FDAAB-A34D-4A15-8C87-074785D221FC}|CGProject.vcxproj|C:\\Users\\user\\Desktop\\\uCEF4\uD4E8\uD130 \uADF8\uB798\uD53D\uC2A4\\\uC131\uC8FC_git\\CG-Project\\CGProject\\CGProject.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{E93FDAAB-A34D-4A15-8C87-074785D221FC}|CGProject.vcxproj|solutionrelative:CGProject.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "CGProject.cpp",
+              "DocumentMoniker": "C:\\Users\\user\\Desktop\\\uCEF4\uD4E8\uD130 \uADF8\uB798\uD53D\uC2A4\\\uC131\uC8FC_git\\CG-Project\\CGProject\\CGProject.cpp",
+              "RelativeDocumentMoniker": "CGProject.cpp",
+              "ToolTip": "C:\\Users\\user\\Desktop\\\uCEF4\uD4E8\uD130 \uADF8\uB798\uD53D\uC2A4\\\uC131\uC8FC_git\\CG-Project\\CGProject\\CGProject.cpp",
+              "RelativeToolTip": "CGProject.cpp",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAAAMAAAAUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-11-29T07:39:43.794Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
