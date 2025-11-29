@@ -125,7 +125,34 @@ float CameraPosZ = 60.0f;
 // 회전 축
 float Rx = 0, Ry = 1;
 // -----------------------------------------------------
+//Arcball 기능 관련 : 마우스 이벤트, 드래그 이벤트
+#define ARCBALL_SENS 0.2f
+GLboolean bArcball = GL_FALSE;
+// 마우스로 평행이동 (무시해도됨) 구현 안할꺼
+GLboolean bParallel = GL_FALSE;
 
+//아크볼 기능에 의한 MV 회전 및 이동
+GLfloat cameraRX = 0.0f; //무시하삼
+GLfloat cameraRY = 0.0f; //무시하삼
+GLfloat cameraTX = 0.0f;
+GLfloat cameraTY = 0.0f;
+
+//드래그 변수(변화 전 커서 위치, 현재 커서 위치) : 모션 벡터용
+GLint preCursorX = 0;
+GLint preCursorY = 0;
+GLint nowCursorX = 0;
+GLint nowCursorY = 0;
+
+// 모델 움직임
+// 마우스 이동 움직임의 따른 객체 이동량
+GLfloat modelMoveTX = 0.0f;
+GLfloat modelMoveTY = 0.0f;
+
+// 해머 움직임 상태
+bool hammerDown = false;
+bool hammerUp = false;
+// 마우스 입력시 해머 회전 적용 변수
+GLfloat modelhammerRZ = 0.0f;
 
 
 
@@ -790,16 +817,29 @@ void DrawScene() {
 
     glUniform1f(LocLightIntensity, 1.0f);
     // 망치 렌더링 (Rotatable Object)
-    // --------------------------------------------------------------------------------------------------------------
+   // --------------------------------------------------------------------------------------------------------------
     const MultiTextureObject& activeObject = DemonHammerObject;
-	const MultiTextureObject& activeObject2 = DemonHammer2Object;
-	const MultiTextureObject& activeObject3 = DemonHammer3Object;
+    const MultiTextureObject& activeObject2 = DemonHammer2Object;
+    const MultiTextureObject& activeObject3 = DemonHammer3Object;
 
-    glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(RotationAngle), glm::vec3(0.0f, 1.0f, 0));
+    /* glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(RotationAngle), glm::vec3(0.0f, 1.0f, 0));*/
 
-    glm::mat4 rotatedModelMatrix = rotationMatrix * activeObject.ModelMatrix;
-    glm::mat4 rotatedModelMatrix2 = rotationMatrix * activeObject2.ModelMatrix;
-    glm::mat4 rotatedModelMatrix3 = rotationMatrix * activeObject3.ModelMatrix;
+    glm::mat4 rotatedModelMatrix = activeObject.ModelMatrix;
+    glm::mat4 rotatedModelMatrix2 = activeObject2.ModelMatrix;
+    glm::mat4 rotatedModelMatrix3 = activeObject3.ModelMatrix;
+
+    // 회전 행렬 적용
+    rotatedModelMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(modelhammerRZ), glm::vec3(0, 0, 1)) * rotatedModelMatrix;
+    rotatedModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(modelMoveTY, 0.0f, -modelMoveTX)) * rotatedModelMatrix;
+    rotatedModelMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0, 1, 0)) * rotatedModelMatrix;
+
+    rotatedModelMatrix2 = glm::rotate(glm::mat4(1.0f), glm::radians(modelhammerRZ), glm::vec3(0, 0, 1)) * rotatedModelMatrix2;
+    rotatedModelMatrix2 = glm::translate(glm::mat4(1.0f), glm::vec3(modelMoveTY, 0.0f, -modelMoveTX)) * rotatedModelMatrix2;
+    rotatedModelMatrix2 = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0, 1, 0)) * rotatedModelMatrix2;
+
+    rotatedModelMatrix3 = glm::rotate(glm::mat4(1.0f), glm::radians(modelhammerRZ), glm::vec3(0, 0, 1)) * rotatedModelMatrix3;
+    rotatedModelMatrix3 = glm::translate(glm::mat4(1.0f), glm::vec3(modelMoveTY, 0.0f, -modelMoveTX)) * rotatedModelMatrix3;
+    rotatedModelMatrix3 = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0, 1, 0)) * rotatedModelMatrix3;
 
     glm::mat4 finalModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)) * rotatedModelMatrix;
     glm::mat4 finalModelMatrix2 = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)) * rotatedModelMatrix2;
@@ -821,10 +861,26 @@ void DrawScene() {
 
 // -------------------- 타이머 & 키보드 (Timer & Keyboard) --------------------
 void Timer(int) {
-    if (RotateObject) RotationAngle += 60.0f * 0.016f;
+    /* if (RotateObject) RotationAngle += 60.0f * 0.016f;*/
+    if (hammerDown) {
+        modelhammerRZ += 10.0f;
+        if (modelhammerRZ >= 90.0f) {
+            modelhammerRZ = 90.0f;
+            hammerDown = false;
+            hammerUp = true;
+        }
+    }
+    else if (hammerUp) {
+        modelhammerRZ -= 10.0f;
+        if (modelhammerRZ <= 0.0f) {
+            modelhammerRZ = 0.0f;
+            hammerUp = false;
+        }
+    }
     glutPostRedisplay();
     glutTimerFunc(16, Timer, 0);
 }
+
 
 void Keyboard(unsigned char key, int, int) {
     switch (key) {
@@ -851,6 +907,41 @@ void Keyboard(unsigned char key, int, int) {
     }
     glutPostRedisplay();
 }
+
+// -------------------- 마우스 이벤트 (Mouse Events) --------------------
+void DoMouse(GLint button, GLint state, GLint x, GLint y) {
+    if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+        bArcball = GL_TRUE;
+        preCursorX = x;
+        preCursorY = y;
+        hammerDown = true;
+        hammerUp = false;
+    }
+    else {
+        bArcball = GL_FALSE;
+    }
+}
+
+void DoMotion(GLint x, GLint y) {
+    if (bArcball == GL_TRUE) {
+        float deltaX = (float)(x - preCursorX);
+        float deltaY = (float)(preCursorY - y);
+
+        // 감도 조절
+        float sensitivity = 0.1f;
+
+        // 마우스 좌우 이동
+        modelMoveTX += deltaX * sensitivity;
+        modelMoveTY += deltaY * sensitivity;
+
+        // 현재 마우스 위치 업데이트
+        preCursorX = x;
+        preCursorY = y;
+    }
+
+    glutPostRedisplay();
+}
+// ----------------------------------------------------------
 
 // -------------------- 메인 함수 (Main) --------------------
 int main(int argc, char** argv) {
@@ -896,6 +987,7 @@ int main(int argc, char** argv) {
 	FenceTextureIds.push_back(LoadTexture("Fence.jpg"));
 
 	// 오브젝트 - (망치)
+    // -- 악마 --
     DemonHammerTextureIds.push_back(LoadTexture("DemonHammer.jpg"));
     DemonHammer2TextureIds.push_back(LoadTexture("DemonHammer2.jpg"));
     DemonHammer3TextureIds.push_back(LoadTexture("DemonHammer3.jpg"));
@@ -930,7 +1022,8 @@ int main(int argc, char** argv) {
     // 환경 - (울타리)
     CreateMultiFaceObject(FenceObject, "Fence.obj", glm::vec3(1.0f), FenceTextureIds);
 
-    // 오브젝트 - (망치) - 악마 컨셉
+    // 오브젝트 - (망치) 
+    // -- 악마 --
     CreateMultiFaceObject(DemonHammerObject, "DemonHammer.obj", glm::vec3(1.0f), DemonHammerTextureIds);
 	CreateMultiFaceObject(DemonHammer2Object, "DemonHammer2.obj", glm::vec3(1.0f), DemonHammer2TextureIds);
     CreateMultiFaceObject(DemonHammer3Object, "DemonHammer3.obj", glm::vec3(1.0f), DemonHammer3TextureIds);
@@ -941,6 +1034,8 @@ int main(int argc, char** argv) {
     glFrontFace(GL_CW);
     glutDisplayFunc(DrawScene);
     glutKeyboardFunc(Keyboard);
+    glutMouseFunc(DoMouse);
+    glutMotionFunc(DoMotion);
     glutTimerFunc(0, Timer, 0);
     glutMainLoop();
     return 0;
