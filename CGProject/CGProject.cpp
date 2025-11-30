@@ -75,6 +75,9 @@ MultiTextureObject StoneObject;
 // -- ¿ïÅ¸¸® -- 
 MultiTextureObject FenceObject;
 
+// -- µå·¡°ï ÇØ°ñ --
+MultiTextureObject DragonSkullObject;
+
 // ·»´õ¸µ¿¡ »ç¿ëµÇÁö ¾Ê´Â ºó ¿ÀºêÁ§Æ®
 MultiTextureObject EmptyObject;
 
@@ -143,6 +146,9 @@ std::vector<GLuint> StoneTextureIds;
 
 // -- ¿ïÅ¸¸® -- 
 std::vector<GLuint> FenceTextureIds;
+
+// -- µå·¡°ï ÇØ°ñ --
+std::vector<GLuint> DragonSkullTextureIds;
 
 // -- ¸ÁÄ¡ --
 // -- ³ª¹« --
@@ -799,7 +805,6 @@ void DrawScene() {
     HoleModel = HoleModel * HoleObject.ModelMatrix;
     Draw(HoleObject, HoleModel);
 
-
 	// µ¹ ·»´õ¸µ
     glUniform1f(LocLightIntensity, 1.0f);
     glm::mat4 StoneModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
@@ -811,6 +816,12 @@ void DrawScene() {
     glm::mat4 FenceModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
     FenceModel = FenceModel * FenceObject.ModelMatrix;
     Draw(FenceObject, FenceModel);
+
+    // µå·¡°ï ÇØ°ñ ·»´õ¸µ
+    glUniform1f(LocLightIntensity, 1.0f);
+    glm::mat4 DragonSkullModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+    DragonSkullModel = DragonSkullModel * DragonSkullObject.ModelMatrix;
+    Draw(DragonSkullObject, DragonSkullModel);
 
     glUniform1f(LocLightIntensity, 1.0f);
     // --------------------------------------------------------------------------------------------------------------
@@ -1042,6 +1053,9 @@ int main(int argc, char** argv) {
     // È¯°æ - (¿ïÅ¸¸®)
 	FenceTextureIds.push_back(LoadTexture("Fence.jpg"));
 
+	// È¯°æ - (µå·¡°ï ÇØ°ñ)
+	DragonSkullTextureIds.push_back(LoadTexture("DragonSkull.jpg"));
+
 	// ¿ÀºêÁ§Æ® - (¸ÁÄ¡)
     // -- ³ª¹« --
     WoodenHammerTextureIds.push_back(LoadTexture("WoodenHammer.jpg"));
@@ -1084,7 +1098,6 @@ int main(int argc, char** argv) {
 	BombMoleBombTextureIds.push_back(LoadTexture("BombMoleBomb.jpg"));
 	BombMoleFuseTextureIds.push_back(LoadTexture("BombMoleFuse.jpg"));
 	BombMoleXmarkTextureIds.push_back(LoadTexture("BombMoleXmark.jpg"));
-
 	// -----------------------------------------------------
     
 
@@ -1113,6 +1126,8 @@ int main(int argc, char** argv) {
 
     // È¯°æ - (¿ïÅ¸¸®)
     CreateMultiFaceObject(FenceObject, "Fence.obj", glm::vec3(1.0f), FenceTextureIds);
+	// È¯°æ - (µå·¡°ï ÇØ°ñ)
+	CreateMultiFaceObject(DragonSkullObject, "DragonSkull.obj", glm::vec3(1.0f), DragonSkullTextureIds);
 	// -----------------------------------------------------
     
 
