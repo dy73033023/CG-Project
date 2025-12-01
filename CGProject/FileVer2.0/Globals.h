@@ -93,7 +93,6 @@ extern MultiTextureObject WoodenHammer2Object;
 // -- ¸ÁÄ¡ -- (¾Ç¸¶ ÄÁ¼Á)
 extern MultiTextureObject DemonHammerObject;
 extern MultiTextureObject DemonHammer2Object;
-extern MultiTextureObject DemonHammer3Object;
 
 // -- ¸ÁÄ¡ -- (º¸¼® ¹ÚÇôÀÖ´Â ÄÁ¼Á)
 extern MultiTextureObject PickaxeObject;
@@ -163,7 +162,6 @@ extern std::vector<GLuint> WoodenHammer2TextureIds;
 // -- ¸ÁÄ¡ -- (¾Ç¸¶ ÄÁ¼Á)
 extern std::vector<GLuint> DemonHammerTextureIds;
 extern std::vector<GLuint> DemonHammer2TextureIds;
-extern std::vector<GLuint> DemonHammer3TextureIds;
 
 // -- ¸ÁÄ¡ -- (º¸¼® ¹ÚÇôÀÖ´Â ÄÁ¼Á)
 extern std::vector<GLuint> PickaxeTextureIds;

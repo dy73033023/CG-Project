@@ -55,7 +55,6 @@ MultiTextureObject WoodenHammer2Object;
 // -- ¸ÁÄ¡ -- (¾Ç¸¶ ÄÁ¼Á)
 MultiTextureObject DemonHammerObject;
 MultiTextureObject DemonHammer2Object;
-MultiTextureObject DemonHammer3Object;
 
 // -- ¸ÁÄ¡ -- (º¸¼® ¹ÚÇôÀÖ´Â ÄÁ¼Á)
 MultiTextureObject PickaxeObject;
@@ -124,7 +123,6 @@ std::vector<GLuint> WoodenHammer2TextureIds;
 // -- ¾Ç¸¶ --
 std::vector<GLuint> DemonHammerTextureIds;
 std::vector<GLuint> DemonHammer2TextureIds;
-std::vector<GLuint> DemonHammer3TextureIds;
 
 // -- º¸¼® ¹ÚÇôÀÖ´Â ¸ÁÄ¡ --
 std::vector<GLuint> PickaxeTextureIds;

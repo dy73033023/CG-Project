@@ -343,7 +343,6 @@ void DrawScene() {
     else if (HammerChoice == 2) {
         HammerParts[0] = &DemonHammerObject;
         HammerParts[1] = &DemonHammer2Object;
-        HammerParts[2] = &DemonHammer3Object;
     }
     else if (HammerChoice == 3) {
         HammerParts[0] = &PickaxeObject;
@@ -624,7 +623,6 @@ int main(int argc, char** argv) {
     // -- ¾Ç¸¶ --
     DemonHammerTextureIds.push_back(LoadTexture("DemonHammer.jpg"));
     DemonHammer2TextureIds.push_back(LoadTexture("DemonHammer2.jpg"));
-    DemonHammer3TextureIds.push_back(LoadTexture("DemonHammer3.jpg"));
 
     // -- º¸¼® --
     PickaxeTextureIds.push_back(LoadTexture("Pickaxe.jpg"));
@@ -695,7 +693,6 @@ int main(int argc, char** argv) {
     // -- ¾Ç¸¶ --
     CreateMultiFaceObject(DemonHammerObject, "DemonHammer.obj", glm::vec3(1.0f), DemonHammerTextureIds);
     CreateMultiFaceObject(DemonHammer2Object, "DemonHammer2.obj", glm::vec3(1.0f), DemonHammer2TextureIds);
-    CreateMultiFaceObject(DemonHammer3Object, "DemonHammer3.obj", glm::vec3(1.0f), DemonHammer3TextureIds);
 
     // -- º¸¼® ¹ÚÇôÀÖ´Â ¸ÁÄ¡ --
     CreateMultiFaceObject(PickaxeObject, "Pickaxe.obj", glm::vec3(1.0f), PickaxeTextureIds);
