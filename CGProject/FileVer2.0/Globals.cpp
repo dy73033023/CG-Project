@@ -61,29 +61,13 @@ MultiTextureObject PickaxeObject;
 MultiTextureObject Pickaxe2Object;
 
 // -- µÎ´õÁö -- (±âº»)
-MultiTextureObject MoleBodyAndHandObject; // ¸öÅë°ú ¼Õ
-MultiTextureObject MoleEyeAndMustacheObject; // ´«°ú Äà¼ö¿°
-MultiTextureObject MoleNailObject; // ¼ÕÅé
-MultiTextureObject MoleNoseObject; // ÄÚ
-MultiTextureObject MoleNoseTipObject; // ÄÚ ³¡
+MultiTextureObject MoleObject;
 
 // -- µÎ´õÁö -- (È²±İ)
-MultiTextureObject GoldenMoleBodyAndHandObject; // ¸öÅë°ú ¼Õ
-MultiTextureObject GoldenMoleEyeAndMustacheObject; // ´«°ú Äà¼ö¿°
-MultiTextureObject GoldenMoleNailObject; // ¼ÕÅé
-MultiTextureObject GoldenMoleNoseObject; // ÄÚ
-MultiTextureObject GoldenMoleNoseTipObject; // ÄÚ ³¡
-MultiTextureObject GoldenMoleCoinObject; // ÄÚÀÎ
+MultiTextureObject GoldenMoleObject;
 
 // -- µÎ´õÁö -- (ÆøÅº)
-MultiTextureObject BombMoleBodyAndHandObject; // ¸öÅë°ú ¼Õ
-MultiTextureObject BombMoleEyeAndMustacheObject; // ´«°ú Äà¼ö¿°
-MultiTextureObject BombMoleNailObject; // ¼ÕÅé
-MultiTextureObject BombMoleNoseObject; // ÄÚ
-MultiTextureObject BombMoleNoseTipObject; // ÄÚ ³¡
-MultiTextureObject BombMoleBombObject; // ÆøÅº
-MultiTextureObject BombMoleFuseObject; // µµÈ­¼±
-MultiTextureObject BombMoleXmarkObject; // ÆøÅº X ¸¶Å©
+MultiTextureObject BombMoleObject;
 
 // ÅØ½ºÃ³ IDµéÀ» ÀúÀåÇÒ º¤ÅÍ
 // -- ¶¥ --
@@ -127,29 +111,13 @@ std::vector<GLuint> PickaxeTextureIds;
 std::vector<GLuint> Pickaxe2TextureIds;
 
 // -- µÎ´õÁö -- (±âº»)
-std::vector<GLuint> MoleBodyAndHandTextureIds; // ¸öÅë°ú ¼Õ
-std::vector<GLuint> MoleNailTextureIds; // ¼ÕÅé
-std::vector<GLuint> MoleEyeAndMustacheTextureIds; // ´«°ú Äà¼ö¿°
-std::vector<GLuint> MoleNoseTextureIds; // ÄÚ
-std::vector<GLuint> MoleNoseTipTextureIds; // ÄÚ ³¡
+std::vector<GLuint> MoleTextureIds;
 
 // -- µÎ´õÁö -- (È²±İ)
-std::vector<GLuint> GoldenMoleBodyAndHandTextureIds; // ¸öÅë°ú ¼Õ
-std::vector<GLuint> GoldenMoleNailTextureIds; // ¼ÕÅé
-std::vector<GLuint> GoldenMoleEyeAndMustacheTextureIds; // ´«°ú Äà¼ö¿°
-std::vector<GLuint> GoldenMoleNoseTextureIds; // ÄÚ
-std::vector<GLuint> GoldenMoleNoseTipTextureIds; // ÄÚ ³¡
-std::vector<GLuint> GoldenMoleCoinTextureIds; // ÄÚÀÎ
+std::vector<GLuint> GoldenMoleTextureIds;
 
 // -- µÎ´õÁö -- (ÆøÅº)
-std::vector<GLuint> BombMoleBodyAndHandTextureIds; // ¸öÅë°ú ¼Õ
-std::vector<GLuint> BombMoleEyeAndMustacheTextureIds; // ´«°ú Äà¼ö¿°
-std::vector<GLuint> BombMoleNailTextureIds; // ¼ÕÅé
-std::vector<GLuint> BombMoleNoseTextureIds; // ÄÚ
-std::vector<GLuint> BombMoleNoseTipTextureIds; // ÄÚ ³¡
-std::vector<GLuint> BombMoleBombTextureIds; // ÆøÅº
-std::vector<GLuint> BombMoleFuseTextureIds; // µµÈ­¼±
-std::vector<GLuint> BombMoleXmarkTextureIds; // ÆøÅº X ¸¶Å©
+std::vector<GLuint> BombMoleTextureIds;
 
 // Ãà VAO
 GLuint AxesVao = 0;

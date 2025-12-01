@@ -99,29 +99,13 @@ extern MultiTextureObject PickaxeObject;
 extern MultiTextureObject Pickaxe2Object;
 
 // -- µÎ´õÁö -- (±âº»)
-extern MultiTextureObject MoleBodyAndHandObject; // ¸öÅë°ú ¼Õ
-extern MultiTextureObject MoleEyeAndMustacheObject; // ´«°ú Äà¼ö¿°
-extern MultiTextureObject MoleNailObject; // ¼ÕÅé
-extern MultiTextureObject MoleNoseObject; // ÄÚ
-extern MultiTextureObject MoleNoseTipObject; // ÄÚ ³¡
+extern MultiTextureObject MoleObject;
 
 // -- µÎ´õÁö -- (È²±İ)
-extern MultiTextureObject GoldenMoleBodyAndHandObject; // ¸öÅë°ú ¼Õ
-extern MultiTextureObject GoldenMoleEyeAndMustacheObject; // ´«°ú Äà¼ö¿°
-extern MultiTextureObject GoldenMoleNailObject; // ¼ÕÅé
-extern MultiTextureObject GoldenMoleNoseObject; // ÄÚ
-extern MultiTextureObject GoldenMoleNoseTipObject; // ÄÚ ³¡
-extern MultiTextureObject GoldenMoleCoinObject; // ÄÚÀÎ
+extern MultiTextureObject GoldenMoleObject;
 
 // -- µÎ´õÁö -- (ÆøÅº)
-extern MultiTextureObject BombMoleBodyAndHandObject; // ¸öÅë°ú ¼Õ
-extern MultiTextureObject BombMoleEyeAndMustacheObject; // ´«°ú Äà¼ö¿°
-extern MultiTextureObject BombMoleNailObject; // ¼ÕÅé
-extern MultiTextureObject BombMoleNoseObject; // ÄÚ
-extern MultiTextureObject BombMoleNoseTipObject; // ÄÚ ³¡
-extern MultiTextureObject BombMoleBombObject; // ÆøÅº
-extern MultiTextureObject BombMoleFuseObject; // µµÈ­¼±
-extern MultiTextureObject BombMoleXmarkObject; // ÆøÅº X ¸¶Å©
+extern MultiTextureObject BombMoleObject;
 
 
 // ÅØ½ºÃ³ IDµéÀ» ÀúÀåÇÒ º¤ÅÍ
@@ -166,29 +150,13 @@ extern std::vector<GLuint> PickaxeTextureIds;
 extern std::vector<GLuint> Pickaxe2TextureIds;
 
 // -- µÎ´õÁö -- (±âº»)
-extern std::vector<GLuint> MoleBodyAndHandTextureIds; // ¸öÅë°ú ¼Õ
-extern std::vector<GLuint> MoleNailTextureIds; // ¼ÕÅé
-extern std::vector<GLuint> MoleEyeAndMustacheTextureIds; // ´«°ú Äà¼ö¿°
-extern std::vector<GLuint> MoleNoseTextureIds; // ÄÚ
-extern std::vector<GLuint> MoleNoseTipTextureIds; // ÄÚ ³¡
+extern std::vector<GLuint> MoleTextureIds;
 
 // -- µÎ´õÁö -- (È²±İ)
-extern std::vector<GLuint> GoldenMoleBodyAndHandTextureIds; // ¸öÅë°ú ¼Õ
-extern std::vector<GLuint> GoldenMoleNailTextureIds; // ¼ÕÅé
-extern std::vector<GLuint> GoldenMoleEyeAndMustacheTextureIds; // ´«°ú Äà¼ö¿°
-extern std::vector<GLuint> GoldenMoleNoseTextureIds; // ÄÚ
-extern std::vector<GLuint> GoldenMoleNoseTipTextureIds; // ÄÚ ³¡
-extern std::vector<GLuint> GoldenMoleCoinTextureIds; // ÄÚÀÎ
+extern std::vector<GLuint> GoldenMoleTextureIds;
 
 // -- µÎ´õÁö -- (ÆøÅº)
-extern std::vector<GLuint> BombMoleBodyAndHandTextureIds; // ¸öÅë°ú ¼Õ
-extern std::vector<GLuint> BombMoleEyeAndMustacheTextureIds; // ´«°ú Äà¼ö¿°
-extern std::vector<GLuint> BombMoleNailTextureIds; // ¼ÕÅé
-extern std::vector<GLuint> BombMoleNoseTextureIds; // ÄÚ
-extern std::vector<GLuint> BombMoleNoseTipTextureIds; // ÄÚ ³¡
-extern std::vector<GLuint> BombMoleBombTextureIds; // ÆøÅº
-extern std::vector<GLuint> BombMoleFuseTextureIds; // µµÈ­¼±
-extern std::vector<GLuint> BombMoleXmarkTextureIds; // ÆøÅº X ¸¶Å©
+extern std::vector<GLuint> BombMoleTextureIds;
 
 // Ãà VAO
 extern GLuint AxesVao;

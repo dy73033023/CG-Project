@@ -327,8 +327,8 @@ void DrawScene() {
     Draw(DragonSkullObject, DragonSkullModel);
 
     glUniform1f(LocLightIntensity, 1.0f);
-	// --------------------------------------------------------------------
-    
+    // --------------------------------------------------------------------
+
 
     // 오브젝트 렌더링 (Rotatable Object)
     // 망치 렌더링
@@ -351,63 +351,34 @@ void DrawScene() {
 
 
     // 두더지 렌더링
-    MultiTextureObject* MoleParts[8] = {
-        &EmptyObject,&EmptyObject,&EmptyObject,&EmptyObject,&EmptyObject,&EmptyObject,&EmptyObject,&EmptyObject
+    MultiTextureObject* MoleParts = &EmptyObject;
+    if (MoleChoice == 1) MoleParts = &MoleObject;
+    else if (MoleChoice == 2)MoleParts = &GoldenMoleObject;
+    else if (MoleChoice == 3) MoleParts = &BombMoleObject;
 
-    };
+    MultiTextureObject* CurrentObject = MoleParts;
 
-    if (MoleChoice == 1) {
-        MoleParts[0] = &MoleBodyAndHandObject;
-        MoleParts[1] = &MoleEyeAndMustacheObject;
-        MoleParts[2] = &MoleNailObject;
-        MoleParts[3] = &MoleNoseObject;
-        MoleParts[4] = &MoleNoseTipObject;
-    }
-    else if (MoleChoice == 2) {
-        MoleParts[0] = &GoldenMoleBodyAndHandObject;
-        MoleParts[1] = &GoldenMoleEyeAndMustacheObject;
-        MoleParts[2] = &GoldenMoleNailObject;
-        MoleParts[3] = &GoldenMoleNoseObject;
-        MoleParts[4] = &GoldenMoleNoseTipObject;
-        MoleParts[5] = &GoldenMoleCoinObject;
-    }
-    else if (MoleChoice == 3) {
-        MoleParts[0] = &BombMoleBodyAndHandObject;
-        MoleParts[1] = &BombMoleEyeAndMustacheObject;
-        MoleParts[2] = &BombMoleNailObject;
-        MoleParts[3] = &BombMoleNoseObject;
-        MoleParts[4] = &BombMoleNoseTipObject;
-        MoleParts[5] = &BombMoleBombObject;
-        MoleParts[6] = &BombMoleFuseObject;
-        MoleParts[7] = &BombMoleXmarkObject;
-    }
+    glm::mat4 FinalModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 2.0f, 0.0f)) * CurrentObject->ModelMatrix;
 
-    for (int i = 0; i < 8; ++i) {
-        MultiTextureObject* CurrentObject = MoleParts[i];
+    // **1. 두더지 월드 OBB 업데이트**
+    UpdateOBB(*CurrentObject, FinalModelMatrix);
 
-        if (CurrentObject->Faces.empty()) continue;
-
-        glm::mat4 FinalModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 2.0f, 0.0f)) * CurrentObject->ModelMatrix;
-
-        // **1. 두더지 월드 OBB 업데이트**
-        UpdateOBB(*CurrentObject, FinalModelMatrix);
-
-        Draw(*CurrentObject, FinalModelMatrix);
-    }
+    Draw(*CurrentObject, FinalModelMatrix);
 
 
-	// ---------------------------- 충돌 감지 및 반응 ----------------------------
+
+    // ---------------------------- 충돌 감지 및 반응 ----------------------------
     // **충돌 감지 플래그 초기화**
     bool collisionOccurred = false;
 
     for (int i = 0; i < 2; ++i) {
         MultiTextureObject* CurrentObject = HammerParts[i];
 
-		MultiTextureObject* OBBHammer = HammerParts[1]; // 망치의 중심 파트로 OBB 검사
+        MultiTextureObject* OBBHammer = HammerParts[1]; // 망치의 중심 파트로 OBB 검사
 
         if (CurrentObject->Faces.empty()) continue;
 
-		if (OBBHammer->Faces.empty()) continue;
+        if (OBBHammer->Faces.empty()) continue;
 
         glm::mat4 RotatedModelMatrix = CurrentObject->ModelMatrix;
 
@@ -421,10 +392,10 @@ void DrawScene() {
         UpdateOBB(*CurrentObject, FinalModelMatrix);
 
         //**1. 망치 중심 파트 OBB 업데이트
-		UpdateOBB(*OBBHammer, FinalModelMatrix);
+        UpdateOBB(*OBBHammer, FinalModelMatrix);
 
         // **2. 망치와 두더지 충돌 검사**
-        if (CheckOBBCollision(OBBHammer->obbWorld, MoleBodyAndHandObject.obbWorld)) {
+        if (CheckOBBCollision(OBBHammer->obbWorld, MoleObject.obbWorld)) {
             collisionOccurred = true;
         }
 
@@ -439,7 +410,7 @@ void DrawScene() {
         glUniform3f(LocObjectColor, 1.0f, 0.2f, 0.2f);
 
         // **충돌 시 OBB를 빨간색으로 그립니다.**
-        DrawOBB(MoleBodyAndHandObject.obbWorld, glm::vec3(1.0f, 0.0f, 0.0f), drawOBB); // 두더지 머리 OBB
+        DrawOBB(MoleObject.obbWorld, glm::vec3(1.0f, 0.0f, 0.0f), drawOBB); // 두더지 머리 OBB
         // 현재 망치 파트의 OBB도 빨간색으로 그립니다.
         // **주의: 망치는 여러 파트이므로 충돌한 파트만 빨간색으로 그리는 것이 정확하나, 
         // 여기서는 OBB가 업데이트된 마지막 파트의 OBB를 그립니다.**
@@ -457,7 +428,7 @@ void DrawScene() {
         glUniform3f(LocObjectColor, 1.0f, 1.0f, 1.0f);
 
         // **충돌이 없으면 OBB를 초록색(또는 다른 색)으로 그립니다.**
-        DrawOBB(MoleBodyAndHandObject.obbWorld, glm::vec3(0.0f, 1.0f, 0.0f), drawOBB); // 두더지 굴 OBB
+        DrawOBB(MoleObject.obbWorld, glm::vec3(0.0f, 1.0f, 0.0f), drawOBB); // 두더지 굴 OBB
         for (int i = 0; i < 4; ++i) {
             MultiTextureObject* CurrentObject = HammerParts[1];
             if (!CurrentObject->Faces.empty()) {
@@ -628,29 +599,13 @@ int main(int argc, char** argv) {
 
     // 오브젝트 - (두더지)
     // -- 기본 --
-	MoleBodyAndHandTextureIds.push_back(LoadTexture("MoleBodyAndHand.jpg"));
-	MoleEyeAndMustacheTextureIds.push_back(LoadTexture("MoleEyeAndMustache.jpg"));
-	MoleNailTextureIds.push_back(LoadTexture("MoleNail.jpg"));
-	MoleNoseTextureIds.push_back(LoadTexture("MoleNose.jpg"));
-	MoleNoseTipTextureIds.push_back(LoadTexture("MoleNoseTip.jpg"));
+	MoleTextureIds.push_back(LoadTexture("Mole.jpg"));
 
 	// -- 황금 --
-	GoldenMoleBodyAndHandTextureIds.push_back(LoadTexture("GoldenMoleBodyAndHand.jpg"));
-	GoldenMoleEyeAndMustacheTextureIds.push_back(LoadTexture("MoleEyeAndMustache.jpg"));
-	GoldenMoleNailTextureIds.push_back(LoadTexture("MoleNail.jpg"));
-	GoldenMoleNoseTextureIds.push_back(LoadTexture("GoldenMoleNose.jpg"));
-	GoldenMoleNoseTipTextureIds.push_back(LoadTexture("GoldenMoleNoseTip.jpg"));
-	GoldenMoleCoinTextureIds.push_back(LoadTexture("GoldenMoleCoin.jpg"));
+	GoldenMoleTextureIds.push_back(LoadTexture("GoldenMole.jpg"));
 
     // -- 폭탄 --
-    BombMoleBodyAndHandTextureIds.push_back(LoadTexture("MoleBodyAndHand.jpg"));
-    BombMoleEyeAndMustacheTextureIds.push_back(LoadTexture("MoleEyeAndMustache.jpg"));
-    BombMoleNailTextureIds.push_back(LoadTexture("MoleNail.jpg"));
-    BombMoleNoseTextureIds.push_back(LoadTexture("MoleNose.jpg"));
-    BombMoleNoseTipTextureIds.push_back(LoadTexture("MoleNoseTip.jpg"));
-    BombMoleBombTextureIds.push_back(LoadTexture("BombMoleBomb.jpg"));
-    BombMoleFuseTextureIds.push_back(LoadTexture("BombMoleFuse.jpg"));
-    BombMoleXmarkTextureIds.push_back(LoadTexture("BombMoleXmark.jpg"));
+    BombMoleTextureIds.push_back(LoadTexture("BombMole.jpg"));
 
     // ---- 오브젝트 생성 ----
     // 환경 - (땅)
@@ -696,29 +651,13 @@ int main(int argc, char** argv) {
 
     // 오브젝트 - (두더지)
     // -- 기본 --
-    CreateMultiFaceObject(MoleBodyAndHandObject, "MoleBodyAndHand.obj", glm::vec3(0.5f), MoleBodyAndHandTextureIds);
-    CreateMultiFaceObject(MoleEyeAndMustacheObject, "MoleEyeAndMustache.obj", glm::vec3(0.5f), MoleEyeAndMustacheTextureIds);
-    CreateMultiFaceObject(MoleNailObject, "MoleNail.obj", glm::vec3(0.5f), MoleNailTextureIds);
-    CreateMultiFaceObject(MoleNoseObject, "MoleNose.obj", glm::vec3(0.5f), MoleNoseTextureIds);
-    CreateMultiFaceObject(MoleNoseTipObject, "MoleNoseTip.obj", glm::vec3(0.5f), MoleNoseTipTextureIds);
+    CreateMultiFaceObject(MoleObject, "Mole.obj", glm::vec3(0.5f), MoleTextureIds);
 
     // -- 황금 --
-    CreateMultiFaceObject(GoldenMoleBodyAndHandObject, "MoleBodyAndHand2.obj", glm::vec3(0.5f), GoldenMoleBodyAndHandTextureIds);
-    CreateMultiFaceObject(GoldenMoleEyeAndMustacheObject, "MoleEyeAndMustache.obj", glm::vec3(0.5f), GoldenMoleEyeAndMustacheTextureIds);
-    CreateMultiFaceObject(GoldenMoleNailObject, "MoleNail2.obj", glm::vec3(0.5f), GoldenMoleNailTextureIds);
-    CreateMultiFaceObject(GoldenMoleNoseObject, "MoleNose.obj", glm::vec3(0.5f), GoldenMoleNoseTextureIds);
-    CreateMultiFaceObject(GoldenMoleNoseTipObject, "MoleNoseTip.obj", glm::vec3(0.5f), GoldenMoleNoseTipTextureIds);
-    CreateMultiFaceObject(GoldenMoleCoinObject, "GoldenMoleCoin.obj", glm::vec3(0.5f), GoldenMoleCoinTextureIds);
+    CreateMultiFaceObject(GoldenMoleObject, "GoldenMole.obj", glm::vec3(0.5f), GoldenMoleTextureIds);
 
     // -- 폭탄 --
-    CreateMultiFaceObject(BombMoleBodyAndHandObject, "MoleBodyAndHand2.obj", glm::vec3(0.5f), BombMoleBodyAndHandTextureIds);
-    CreateMultiFaceObject(BombMoleEyeAndMustacheObject, "MoleEyeAndMustache.obj", glm::vec3(0.5f), BombMoleEyeAndMustacheTextureIds);
-    CreateMultiFaceObject(BombMoleNailObject, "MoleNail2.obj", glm::vec3(0.5f), BombMoleNailTextureIds);
-    CreateMultiFaceObject(BombMoleNoseObject, "MoleNose.obj", glm::vec3(0.5f), BombMoleNoseTextureIds);
-    CreateMultiFaceObject(BombMoleNoseTipObject, "MoleNoseTip.obj", glm::vec3(0.5f), BombMoleNoseTipTextureIds);
-    CreateMultiFaceObject(BombMoleBombObject, "BombMoleBomb.obj", glm::vec3(0.5f), BombMoleBombTextureIds);
-    CreateMultiFaceObject(BombMoleFuseObject, "BombMoleFuse.obj", glm::vec3(0.5f), BombMoleFuseTextureIds);
-    CreateMultiFaceObject(BombMoleXmarkObject, "BombMoleXmark.obj", glm::vec3(0.5f), BombMoleXmarkTextureIds);
+    CreateMultiFaceObject(BombMoleObject, "BombMole.obj", glm::vec3(0.5f), BombMoleTextureIds);
 
     // 렌더링 설정 및 메인 루프 시작
     glEnable(GL_DEPTH_TEST);
