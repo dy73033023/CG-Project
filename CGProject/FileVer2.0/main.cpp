@@ -332,6 +332,12 @@ void DrawScene() {
     FishModel = FishModel * FishObject.ModelMatrix;
     Draw(FishObject, FishModel);
 
+    // 수중 괴물 렌더링
+    glUniform1f(LocLightIntensity, 1.0f);
+    glm::mat4 MonsterModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+    MonsterModel = MonsterModel * MonsterObject.ModelMatrix;
+    Draw(MonsterObject, MonsterModel);
+
     glUniform1f(LocLightIntensity, 1.0f);
     // --------------------------------------------------------------------
 
@@ -593,6 +599,9 @@ int main(int argc, char** argv) {
     // 환경 - (물고기)
 	FishTextureIds.push_back(LoadTexture("Fish.jpg"));
 
+	// 환경 - (수중 괴물)
+	MonsterTextureIds.push_back(LoadTexture("Monster.jpg"));
+
     // 오브젝트 - (망치)
     // -- 나무 --
     WoodenHammerTextureIds.push_back(LoadTexture("WoodenHammer.jpg"));
@@ -644,7 +653,11 @@ int main(int argc, char** argv) {
     // 환경 - (드래곤 해골)
     CreateMultiFaceObject(DragonSkullObject, "DragonSkull.obj", glm::vec3(1.0f), DragonSkullTextureIds);
 
+    // 환경 - (물고기)
 	CreateMultiFaceObject(FishObject, "Fish.obj", glm::vec3(1.0f), FishTextureIds);
+
+	// 환경 - (수중 괴물)
+	CreateMultiFaceObject(MonsterObject, "Monster.obj", glm::vec3(1.0f), MonsterTextureIds);
     // -----------------------------------------------------
 
     // 오브젝트 - (망치) 

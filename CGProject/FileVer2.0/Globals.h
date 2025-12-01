@@ -83,6 +83,9 @@ extern MultiTextureObject DragonSkullObject;
 // -- 물고기 --
 extern MultiTextureObject FishObject;
 
+// -- 수중 괴물 --
+extern MultiTextureObject MonsterObject;
+
 // -- 망치 -- (초기상태 : 아무 정보 없는 상태)
 extern MultiTextureObject EmptyObject;
 extern MultiTextureObject EmptyOject2;
@@ -142,6 +145,9 @@ extern std::vector<GLuint> DragonSkullTextureIds;
 
 // -- 물고기 --
 extern std::vector<GLuint> FishTextureIds;
+
+// -- 수중 괴물 --
+extern std::vector<GLuint> MonsterTextureIds;
 
 // -- 망치 -- (나무 컨셉)
 extern std::vector<GLuint> WoodenHammerTextureIds;
