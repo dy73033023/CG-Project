@@ -232,7 +232,7 @@ void DrawScene() {
 
     // View 행렬 조작 없이 일반 View 행렬 그대로 사용
     glm::mat4 View = glm::lookAt(CameraPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0, 1.0f, 0));
-    glm::mat4 Projection = glm::perspective(glm::radians(45.0f), (float)800 / 800, 0.1f, 1000.0f);
+    glm::mat4 Projection = glm::perspective(glm::radians(45.0f), (float)1200 / 800, 0.1f, 1000.0f);
 
     glUniformMatrix4fv(LocView, 1, GL_FALSE, glm::value_ptr(View));
     glUniformMatrix4fv(LocProjection, 1, GL_FALSE, glm::value_ptr(Projection));
@@ -292,14 +292,9 @@ void DrawScene() {
 
     // 나무 렌더링
     glUniform1f(LocLightIntensity, 1.0f);
-    glm::mat4 TreeTrunkModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-    TreeTrunkModel = TreeTrunkModel * TreeTrunkObject.ModelMatrix;
-    Draw(TreeTrunkObject, TreeTrunkModel);
-
-    glUniform1f(LocLightIntensity, 1.0f);
-    glm::mat4 TreeLeavesModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-    TreeLeavesModel = TreeLeavesModel * TreeLeavesObject.ModelMatrix;
-    Draw(TreeLeavesObject, TreeLeavesModel);
+    glm::mat4 TreeModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+    TreeModel = TreeModel * TreeObject.ModelMatrix;
+    Draw(TreeObject, TreeModel);
 
     // 잔디 렌더링
     glUniform1f(LocLightIntensity, 1.0f);
@@ -577,7 +572,7 @@ void DoMotion(GLint x, GLint y) {
 int main(int argc, char** argv) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
-    glutInitWindowSize(800, 800);
+    glutInitWindowSize(1200, 800);
     glutCreateWindow("CGProject");
 
     // GLEW 초기화 (OpenGL 함수 포인터 로드)
@@ -604,8 +599,7 @@ int main(int argc, char** argv) {
     CloudTextureIds.push_back(LoadTexture("Cloud.jpg"));
 
     // 환경 - (나무)
-    TreeTrunkTextureIds.push_back(LoadTexture("TreeTrunk.jpg"));
-    TreeLeavesTextureIds.push_back(LoadTexture("TreeLeaves.jpg"));
+    TreeTextureIds.push_back(LoadTexture("Tree.png"));
 
     // 환경 - (잔디)
     GrassTextureIds.push_back(LoadTexture("Grass.jpg"));
@@ -620,7 +614,7 @@ int main(int argc, char** argv) {
     FenceTextureIds.push_back(LoadTexture("Fence.jpg"));
 
     // 환경 - (드래곤 해골)
-    DragonSkullTextureIds.push_back(LoadTexture("DragonSkull.jpg"));
+    DragonSkullTextureIds.push_back(LoadTexture("DragonSkull.png"));
 
     // 오브젝트 - (망치)
     // -- 나무 --
@@ -675,8 +669,7 @@ int main(int argc, char** argv) {
     CreateMultiFaceObject(CloudObject, "Cloud.obj", glm::vec3(1.0f, 1.0f, 1.0f), CloudTextureIds);
 
     // 환경 - (나무)
-    CreateMultiFaceObject(TreeTrunkObject, "TreeTrunk.obj", glm::vec3(1.0f), TreeTrunkTextureIds);
-    CreateMultiFaceObject(TreeLeavesObject, "TreeLeaves.obj", glm::vec3(1.0f), TreeLeavesTextureIds);
+    CreateMultiFaceObject(TreeObject, "Tree.obj", glm::vec3(1.0f), TreeTextureIds);
 
     // 환경 - (잔디)
     CreateMultiFaceObject(GrassObject, "Grass.obj", glm::vec3(1.0f), GrassTextureIds);
@@ -691,7 +684,7 @@ int main(int argc, char** argv) {
     CreateMultiFaceObject(FenceObject, "Fence.obj", glm::vec3(1.0f), FenceTextureIds);
 
     // 환경 - (드래곤 해골)
-    CreateMultiFaceObject(DragonSkullObject, "DragonSkull.obj", glm::vec3(1.0f), DragonSkullTextureIds);
+    CreateMultiFaceObject(DragonSkullObject, "DragonSkull2.obj", glm::vec3(1.0f), DragonSkullTextureIds);
     // -----------------------------------------------------
 
     // 오브젝트 - (망치) 

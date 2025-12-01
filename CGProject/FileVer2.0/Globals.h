@@ -63,8 +63,7 @@ extern MultiTextureObject RiverObject;
 extern MultiTextureObject CloudObject;
 
 // -- ³ª¹« --
-extern MultiTextureObject TreeTrunkObject;
-extern MultiTextureObject TreeLeavesObject;
+extern MultiTextureObject TreeObject;
 
 // -- ÀÜµð --
 extern MultiTextureObject GrassObject;
@@ -140,8 +139,7 @@ extern std::vector<GLuint> RiverTextureIds;
 extern std::vector<GLuint> CloudTextureIds;
 
 // -- ³ª¹« --
-extern std::vector<GLuint> TreeTrunkTextureIds;
-extern std::vector<GLuint> TreeLeavesTextureIds;
+extern std::vector<GLuint> TreeTextureIds;
 
 // -- ÀÜµð --
 extern std::vector<GLuint> GrassTextureIds;

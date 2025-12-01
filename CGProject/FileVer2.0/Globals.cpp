@@ -25,8 +25,7 @@ MultiTextureObject RiverObject;
 MultiTextureObject CloudObject;
 
 // -- ³ª¹« --
-MultiTextureObject TreeTrunkObject;
-MultiTextureObject TreeLeavesObject;
+MultiTextureObject TreeObject;
 
 // -- ÀÜµð --
 MultiTextureObject GrassObject;
@@ -100,8 +99,7 @@ std::vector<GLuint> RiverTextureIds;
 std::vector<GLuint> CloudTextureIds;
 
 // --³ª¹« --
-std::vector<GLuint> TreeTrunkTextureIds;
-std::vector<GLuint> TreeLeavesTextureIds;
+std::vector<GLuint> TreeTextureIds;
 
 // -- ÀÜµð --
 std::vector<GLuint> GrassTextureIds;
