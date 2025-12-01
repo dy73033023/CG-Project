@@ -48,11 +48,12 @@ MultiTextureObject FishObject;
 // -- ¼öÁß ±«¹° --
 MultiTextureObject MonsterObject;
 
+// -- °ñ·½ --
+MultiTextureObject GolemObject;
+
 // -- ¸ÁÄ¡ -- (ÃÊ±â »óÅÂ : ¾Æ¹« Á¤º¸ ¾øÀ½)
 MultiTextureObject EmptyObject;
 MultiTextureObject EmptyObject2;
-MultiTextureObject EmptyObject3;
-MultiTextureObject EmptyObject4;
 
 // -- ¸ÁÄ¡ -- (³ª¹« ÄÁ¼Á)
 MultiTextureObject WoodenHammerObject;
@@ -108,6 +109,9 @@ std::vector<GLuint> FishTextureIds;
 
 // -- ¼öÁß ±«¹° --
 std::vector<GLuint> MonsterTextureIds;
+
+// -- °ñ·½ --
+std::vector<GLuint> GolemTextureIds;
 
 // -- ¸ÁÄ¡ --
 // -- ³ª¹« --

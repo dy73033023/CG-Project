@@ -338,6 +338,12 @@ void DrawScene() {
     MonsterModel = MonsterModel * MonsterObject.ModelMatrix;
     Draw(MonsterObject, MonsterModel);
 
+    // °ñ·½ ·»´õ¸µ
+    glUniform1f(LocLightIntensity, 1.0f);
+    glm::mat4 GolemModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+    GolemModel = GolemModel * GolemObject.ModelMatrix;
+    Draw(GolemObject, GolemModel);
+
     glUniform1f(LocLightIntensity, 1.0f);
     // --------------------------------------------------------------------
 
@@ -602,6 +608,9 @@ int main(int argc, char** argv) {
 	// È¯°æ - (¼öÁß ±«¹°)
 	MonsterTextureIds.push_back(LoadTexture("Monster.jpg"));
 
+	// È¯°æ - (°ñ·½)
+    GolemTextureIds.push_back(LoadTexture("Golem.jpg"));
+
     // ¿ÀºêÁ§Æ® - (¸ÁÄ¡)
     // -- ³ª¹« --
     WoodenHammerTextureIds.push_back(LoadTexture("WoodenHammer.jpg"));
@@ -658,6 +667,9 @@ int main(int argc, char** argv) {
 
 	// È¯°æ - (¼öÁß ±«¹°)
 	CreateMultiFaceObject(MonsterObject, "Monster.obj", glm::vec3(1.0f), MonsterTextureIds);
+
+	// È¯°æ - (°ñ·½)
+    CreateMultiFaceObject(GolemObject, "Golem.obj", glm::vec3(1.0f), GolemTextureIds);
     // -----------------------------------------------------
 
     // ¿ÀºêÁ§Æ® - (¸ÁÄ¡) 

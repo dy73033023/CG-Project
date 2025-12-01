@@ -86,11 +86,12 @@ extern MultiTextureObject FishObject;
 // -- ¼öÁß ±«¹° --
 extern MultiTextureObject MonsterObject;
 
+// -- °ñ·½ --
+extern MultiTextureObject GolemObject;
+
 // -- ¸ÁÄ¡ -- (ÃÊ±â»óÅÂ : ¾Æ¹« Á¤º¸ ¾ø´Â »óÅÂ)
 extern MultiTextureObject EmptyObject;
 extern MultiTextureObject EmptyOject2;
-extern MultiTextureObject EmptyOject3;
-extern MultiTextureObject EmptyOject4;
 
 // -- ¸ÁÄ¡ -- (³ª¹« ÄÁ¼Á)
 extern MultiTextureObject WoodenHammerObject;
@@ -148,6 +149,9 @@ extern std::vector<GLuint> FishTextureIds;
 
 // -- ¼öÁß ±«¹° --
 extern std::vector<GLuint> MonsterTextureIds;
+
+// -- °ñ·½ --
+extern std::vector<GLuint> GolemTextureIds;
 
 // -- ¸ÁÄ¡ -- (³ª¹« ÄÁ¼Á)
 extern std::vector<GLuint> WoodenHammerTextureIds;
