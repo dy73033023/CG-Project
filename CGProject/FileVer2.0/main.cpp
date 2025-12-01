@@ -599,7 +599,7 @@ int main(int argc, char** argv) {
     CloudTextureIds.push_back(LoadTexture("Cloud.jpg"));
 
     // 환경 - (나무)
-    TreeTextureIds.push_back(LoadTexture("Tree.png"));
+    TreeTextureIds.push_back(LoadTexture("Tree.jpg"));
 
     // 환경 - (잔디)
     GrassTextureIds.push_back(LoadTexture("Grass.jpg"));
