@@ -38,6 +38,7 @@ bool LoadObj(const char* path,
         else if (line[0] == 'v' && line[1] == 't') {
             glm::vec2 uv;
             sscanf_s(line, "vt %f %f", &uv.x, &uv.y);
+            uv.y = 1.0f - uv.y;
             uvs.push_back(uv);
         }
         else if (line[0] == 'v' && line[1] == 'n') {
