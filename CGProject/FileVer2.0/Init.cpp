@@ -111,6 +111,7 @@ GLuint LoadTexture(const char* path) {
     glBindTexture(GL_TEXTURE_2D, textureId);
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+	std::cout << "텍스처 크기: " << width << "x" << height << ", 채널 수: " << channels << std::endl;
     glGenerateMipmap(GL_TEXTURE_2D);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
