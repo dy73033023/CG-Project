@@ -326,6 +326,12 @@ void DrawScene() {
     DragonSkullModel = DragonSkullModel * DragonSkullObject.ModelMatrix;
     Draw(DragonSkullObject, DragonSkullModel);
 
+    // 물고기 렌더링
+    glUniform1f(LocLightIntensity, 1.0f);
+    glm::mat4 FishModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+    FishModel = FishModel * FishObject.ModelMatrix;
+    Draw(FishObject, FishModel);
+
     glUniform1f(LocLightIntensity, 1.0f);
     // --------------------------------------------------------------------
 
@@ -374,7 +380,7 @@ void DrawScene() {
     for (int i = 0; i < 2; ++i) {
         MultiTextureObject* CurrentObject = HammerParts[i];
 
-        MultiTextureObject* OBBHammer = HammerParts[1]; // 망치의 중심 파트로 OBB 검사
+        MultiTextureObject* OBBHammer = HammerParts[0]; // 망치의 중심 파트로 OBB 검사
 
         if (CurrentObject->Faces.empty()) continue;
 
@@ -415,7 +421,7 @@ void DrawScene() {
         // **주의: 망치는 여러 파트이므로 충돌한 파트만 빨간색으로 그리는 것이 정확하나, 
         // 여기서는 OBB가 업데이트된 마지막 파트의 OBB를 그립니다.**
         for (int i = 0; i < 4; ++i) {
-            MultiTextureObject* CurrentObject = HammerParts[1];
+            MultiTextureObject* CurrentObject = HammerParts[0];
             if (!CurrentObject->Faces.empty()) {
                 // 충돌 여부와 상관없이 OBB가 업데이트되었으므로 월드 OBB를 그립니다.
                 DrawOBB(CurrentObject->obbWorld, glm::vec3(1.0f, 0.0f, 0.0f), drawOBB);
@@ -430,7 +436,7 @@ void DrawScene() {
         // **충돌이 없으면 OBB를 초록색(또는 다른 색)으로 그립니다.**
         DrawOBB(MoleObject.obbWorld, glm::vec3(0.0f, 1.0f, 0.0f), drawOBB); // 두더지 굴 OBB
         for (int i = 0; i < 4; ++i) {
-            MultiTextureObject* CurrentObject = HammerParts[1];
+            MultiTextureObject* CurrentObject = HammerParts[0];
             if (!CurrentObject->Faces.empty()) {
                 DrawOBB(CurrentObject->obbWorld, glm::vec3(0.0f, 1.0f, 0.0f), drawOBB);
             }
@@ -584,6 +590,9 @@ int main(int argc, char** argv) {
     // 환경 - (드래곤 해골)
     DragonSkullTextureIds.push_back(LoadTexture("DragonSkull.jpg"));
 
+    // 환경 - (물고기)
+	FishTextureIds.push_back(LoadTexture("Fish.jpg"));
+
     // 오브젝트 - (망치)
     // -- 나무 --
     WoodenHammerTextureIds.push_back(LoadTexture("WoodenHammer.jpg"));
@@ -634,6 +643,8 @@ int main(int argc, char** argv) {
 
     // 환경 - (드래곤 해골)
     CreateMultiFaceObject(DragonSkullObject, "DragonSkull.obj", glm::vec3(1.0f), DragonSkullTextureIds);
+
+	CreateMultiFaceObject(FishObject, "Fish.obj", glm::vec3(1.0f), FishTextureIds);
     // -----------------------------------------------------
 
     // 오브젝트 - (망치) 

@@ -42,6 +42,9 @@ MultiTextureObject FenceObject;
 // -- 드래곤 해골 --
 MultiTextureObject DragonSkullObject;
 
+// -- 물고기 --
+MultiTextureObject FishObject;
+
 // -- 망치 -- (초기 상태 : 아무 정보 없음)
 MultiTextureObject EmptyObject;
 MultiTextureObject EmptyObject2;
@@ -96,6 +99,9 @@ std::vector<GLuint> FenceTextureIds;
 
 // -- 드래곤 해골 --
 std::vector<GLuint> DragonSkullTextureIds;
+
+// -- 물고기 --
+std::vector<GLuint> FishTextureIds;
 
 // -- 망치 --
 // -- 나무 --
