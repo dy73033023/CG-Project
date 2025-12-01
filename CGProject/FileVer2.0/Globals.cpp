@@ -59,8 +59,6 @@ MultiTextureObject DemonHammer2Object;
 // -- 망치 -- (보석 박혀있는 컨셉)
 MultiTextureObject PickaxeObject;
 MultiTextureObject Pickaxe2Object;
-MultiTextureObject Pickaxe3Object;
-MultiTextureObject Pickaxe4Object;
 
 // -- 두더지 -- (기본)
 MultiTextureObject MoleBodyAndHandObject; // 몸통과 손
@@ -127,8 +125,6 @@ std::vector<GLuint> DemonHammer2TextureIds;
 // -- 보석 박혀있는 망치 --
 std::vector<GLuint> PickaxeTextureIds;
 std::vector<GLuint> Pickaxe2TextureIds;
-std::vector<GLuint> Pickaxe3TextureIds;
-std::vector<GLuint> Pickaxe4TextureIds;
 
 // -- 두더지 -- (기본)
 std::vector<GLuint> MoleBodyAndHandTextureIds; // 몸통과 손

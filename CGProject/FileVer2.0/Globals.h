@@ -97,8 +97,6 @@ extern MultiTextureObject DemonHammer2Object;
 // -- 망치 -- (보석 박혀있는 컨셉)
 extern MultiTextureObject PickaxeObject;
 extern MultiTextureObject Pickaxe2Object;
-extern MultiTextureObject Pickaxe3Object;
-extern MultiTextureObject Pickaxe4Object;
 
 // -- 두더지 -- (기본)
 extern MultiTextureObject MoleBodyAndHandObject; // 몸통과 손
@@ -166,8 +164,6 @@ extern std::vector<GLuint> DemonHammer2TextureIds;
 // -- 망치 -- (보석 박혀있는 컨셉)
 extern std::vector<GLuint> PickaxeTextureIds;
 extern std::vector<GLuint> Pickaxe2TextureIds;
-extern std::vector<GLuint> Pickaxe3TextureIds;
-extern std::vector<GLuint> Pickaxe4TextureIds;
 
 // -- 두더지 -- (기본)
 extern std::vector<GLuint> MoleBodyAndHandTextureIds; // 몸통과 손

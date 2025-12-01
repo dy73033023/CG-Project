@@ -332,8 +332,8 @@ void DrawScene() {
 
     // 오브젝트 렌더링 (Rotatable Object)
     // 망치 렌더링
-    MultiTextureObject* HammerParts[4] = {
-        &EmptyObject, &EmptyObject, &EmptyObject, &EmptyObject
+    MultiTextureObject* HammerParts[2] = {
+        &EmptyObject, &EmptyObject
     };
 
     if (HammerChoice == 1) {
@@ -347,8 +347,6 @@ void DrawScene() {
     else if (HammerChoice == 3) {
         HammerParts[0] = &PickaxeObject;
         HammerParts[1] = &Pickaxe2Object;
-        HammerParts[2] = &Pickaxe3Object;
-        HammerParts[3] = &Pickaxe4Object;
     }
 
 
@@ -402,7 +400,7 @@ void DrawScene() {
     // **충돌 감지 플래그 초기화**
     bool collisionOccurred = false;
 
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < 2; ++i) {
         MultiTextureObject* CurrentObject = HammerParts[i];
 
 		MultiTextureObject* OBBHammer = HammerParts[1]; // 망치의 중심 파트로 OBB 검사
@@ -613,7 +611,7 @@ int main(int argc, char** argv) {
     FenceTextureIds.push_back(LoadTexture("Fence.jpg"));
 
     // 환경 - (드래곤 해골)
-    DragonSkullTextureIds.push_back(LoadTexture("DragonSkull.png"));
+    DragonSkullTextureIds.push_back(LoadTexture("DragonSkull.jpg"));
 
     // 오브젝트 - (망치)
     // -- 나무 --
@@ -627,8 +625,6 @@ int main(int argc, char** argv) {
     // -- 보석 --
     PickaxeTextureIds.push_back(LoadTexture("Pickaxe.jpg"));
     Pickaxe2TextureIds.push_back(LoadTexture("Pickaxe2.jpg"));
-    Pickaxe3TextureIds.push_back(LoadTexture("Pickaxe3.jpg"));
-    Pickaxe4TextureIds.push_back(LoadTexture("Pickaxe4.jpg"));
 
     // 오브젝트 - (두더지)
     // -- 기본 --
@@ -682,7 +678,7 @@ int main(int argc, char** argv) {
     CreateMultiFaceObject(FenceObject, "Fence.obj", glm::vec3(1.0f), FenceTextureIds);
 
     // 환경 - (드래곤 해골)
-    CreateMultiFaceObject(DragonSkullObject, "DragonSkull2.obj", glm::vec3(1.0f), DragonSkullTextureIds);
+    CreateMultiFaceObject(DragonSkullObject, "DragonSkull.obj", glm::vec3(1.0f), DragonSkullTextureIds);
     // -----------------------------------------------------
 
     // 오브젝트 - (망치) 
@@ -697,8 +693,6 @@ int main(int argc, char** argv) {
     // -- 보석 박혀있는 망치 --
     CreateMultiFaceObject(PickaxeObject, "Pickaxe.obj", glm::vec3(1.0f), PickaxeTextureIds);
     CreateMultiFaceObject(Pickaxe2Object, "Pickaxe2.obj", glm::vec3(1.0f), Pickaxe2TextureIds);
-    CreateMultiFaceObject(Pickaxe3Object, "Pickaxe3.obj", glm::vec3(1.0f), Pickaxe3TextureIds);
-    CreateMultiFaceObject(Pickaxe4Object, "Pickaxe4.obj", glm::vec3(1.0f), Pickaxe4TextureIds);
 
     // 오브젝트 - (두더지)
     // -- 기본 --
