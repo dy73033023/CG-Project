@@ -1,0 +1,9 @@
+Globals.h / Globals.cpp : 모든 변수 관리
+
+Init.h / Init.cpp : 파일 리더 함수, 셰이더 컴파일러 함수, 셰이더 프로그램 생성 함수, 텍스처 로더 함수 관리
+
+main.cpp : draw, 충돌처리 바운딩 박스 그리기, 충돌처리 함수 호출, 키보드 입력, 마우스 입력, 메인함수 관리
+
+OBB_Collision.h / OBB_Collision.cpp : OBB axis 계산 함수, 축에 대한 투영 간격 체크 함수, OBB 충돌 검사 메인 함수 관리
+
+ObjectLoader.h / ObjectLoader.cpp : OBJ 로더 함수, 다중면 오브젝트 생성 함수 관리
