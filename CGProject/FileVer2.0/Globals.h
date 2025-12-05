@@ -125,6 +125,10 @@ extern MultiTextureObject BombMoleObject;
 // -- 효과 -- 
 // -- 동전 --
 extern MultiTextureObject CoinObject;
+
+// -- UI --
+extern MultiTextureObject HeartObject;
+
 // 텍스처 ID들을 저장할 벡터
 
 // -- 땅 --
@@ -188,6 +192,9 @@ extern std::vector<GLuint> BombMoleTextureIds;
 // -- 동전 --
 extern std::vector<GLuint> CoinTextureIds;
 
+// -- UI --
+extern std::vector<GLuint> HeartTextureIds;
+
 // 축 VAO
 extern GLuint AxesVao;
 
@@ -248,13 +255,18 @@ extern int HammerChoice;
 extern int MoleChoice;
 
 // ----------------- 효과 관련 변수 (Effect Variables) -------------------
-// 이펙트 렌더링 변수
+// UI 이펙트 렌더링 변수
 extern bool Effect;
+extern bool HeartRotate;
+extern int Hp; // 하트 개수
 // 이펙트 선택 변수
 extern int EffectChoice;
-// ------------------ 동전 애니메이션 ------------------
+
+
+// ------------------ UI, 이펙트 애니메이션 ------------------
 extern float CoinY;
 extern float CoinAngle;
+extern float HeartAngle;
 
 // 충돌 체크 변수
 // 충돌이 발생했는지 여부

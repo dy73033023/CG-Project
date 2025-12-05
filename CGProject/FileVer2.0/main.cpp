@@ -356,10 +356,26 @@ void DrawScene() {
     glm::mat4 GolemModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
     GolemModel = GolemModel * GolemObject.ModelMatrix;
     Draw(GolemObject, GolemModel);
+    // ---------------------------------------------------------------------
+
+	// ---------------------------- UI 렌더링 ----------------------------
+    // 하트 렌더링
+    glUniform1f(LocLightIntensity, 1.0f);
+    int CurrentHp = Hp;
+    std::vector<glm::mat4> HeartModel(CurrentHp, glm::mat4(1.0f));
+    glm::mat4 RotateModelMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(HeartAngle), glm::vec3(0, 1, 0));
+
+    for (int i = 0; i < CurrentHp; ++i) {
+        HeartModel[i] = glm::translate(glm::mat4(1.0f), glm::vec3(-4.0f + 2.0f * i, 5.0f, -10.0f)) * RotateModelMatrix;
+        HeartModel[i] = HeartModel[i] * HeartObject.ModelMatrix;
+        Draw(HeartObject, HeartModel[i]);
+    }
+    
 
     glUniform1f(LocLightIntensity, 1.0f);
 	// --------------------------------------------------------------------
     
+    // ---------------------------- 망치 두더지 이펙트  렌더링 ----------------------------
     if (!CameraMoveStart) {
         // 오브젝트 렌더링 (Rotatable Object)
         // 망치 렌더링
@@ -420,6 +436,10 @@ void DrawScene() {
 
             Draw(*CurrentEffect, FinalModelMatrix);
         }
+        // ---------------------------------------------------------------
+        
+
+
 
         // ---------------------------- 충돌 감지 및 반응 ----------------------------
         // **충돌 감지 플래그 초기화**
@@ -565,6 +585,11 @@ void Timer(int) {
             }
         }
     }
+
+    if (HeartRotate) {
+        HeartAngle += 5.0f;
+    }
+
     glutPostRedisplay();
     glutTimerFunc(16, Timer, 0);
 }
@@ -582,7 +607,10 @@ void Keyboard(unsigned char key, int, int) {
             Effect = true; 
             EffectChoice = 1;
             break;
-
+		case'h':
+            Hp -= 1;
+            if (Hp <= 0) Hp = 0;
+            break;
 
 
 
@@ -744,6 +772,10 @@ int main(int argc, char** argv) {
 	// -- 동전 --
 	CoinTextureIds.push_back(LoadTexture("Coin.jpg"));
 
+    // 오브젝트 - (UI)
+    // -- 하트 --
+    HeartTextureIds.push_back(LoadTexture("Heart.jpg"));
+
     // ---- 오브젝트 생성 ----
     // 환경 - (땅)
     CreateMultiFaceObject(GroundObject, "Ground.obj", glm::vec3(1.0f, 1.0f, 1.0f), GroundTextureIds);
@@ -805,9 +837,14 @@ int main(int argc, char** argv) {
     // -- 폭탄 --
     CreateMultiFaceObject(BombMoleObject, "BombMole.obj", glm::vec3(0.5f), BombMoleTextureIds);
 
+
     // 오브젝트 - (효과)
     // -- 동전 --
-    CreateMultiFaceObject(CoinObject, "Coin.obj", glm::vec3(0.5f), CoinTextureIds);
+    CreateMultiFaceObject(CoinObject, "Coin.obj", glm::vec3(1.0f), CoinTextureIds);
+
+    // 오브젝트 - (UI)
+    // -- 하트 --
+    CreateMultiFaceObject(HeartObject, "Heart.obj", glm::vec3(1.5f), HeartTextureIds);
 
     // 렌더링 설정 및 메인 루프 시작
    

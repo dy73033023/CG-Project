@@ -80,6 +80,9 @@ MultiTextureObject BombMoleObject;
 // -- 동전 --
 MultiTextureObject CoinObject;
 
+// -- UI -- 
+MultiTextureObject HeartObject;
+
 // 텍스처 ID들을 저장할 벡터
 // -- 땅 --
 std::vector<GLuint> GroundTextureIds;
@@ -142,6 +145,10 @@ std::vector<GLuint> BombMoleTextureIds;
 // -- 효과 --
 // -- 동전 --
 std::vector<GLuint> CoinTextureIds;
+
+// -- UI --
+std::vector<GLuint> HeartTextureIds;
+
 // 축 VAO
 GLuint AxesVao = 0;
 
@@ -205,13 +212,18 @@ int HammerChoice = 0;
 int MoleChoice = 0; 
 
 // ----------------- 효과 관련 변수 (Effect Variables) -------------------
-// 이펙트 렌더링 변수
+// UI 이펙트 렌더링 변수
 bool Effect = false;
+bool HeartRotate = true;
+int Hp = 5; // 하트 개수
+
 // 이펙트 선택 변수
 int EffectChoice = 0;
-// ------------------ 동전 애니메이션 ------------------
+
+// ------------------ UI 이펙트 애니메이션 ------------------
 float CoinY = 0.0f;
 float CoinAngle = 0.0f;
+float HeartAngle = 0.0f;
 
 // 충돌 체크 변수
 // 충돌이 발생했는지 여부
@@ -219,7 +231,6 @@ bool preCollision;
 // 충돌 횟수
 int collisionCount;
 //	-------------------- 두더지 위치 -----------------------
-
 MoleXYZT MoleCoordinates[16] = {
     {0.4f, 0.0f, 0.2f, 1}, {9.8f, 0.0f, -7.5f, 1}, {-7.3f, 0.0f, 4.5f, 1}, {2.25f, 0.0f, 10.6f, 1},
     {-3.7f, 0.0f, -7.2f, 1}, {8.8f, 0.0f, 4.1f, 1}, {-4.7f, 0.0f, -2.0f, 2}, {3.5f, 0.0f, 5.0f, 2},
