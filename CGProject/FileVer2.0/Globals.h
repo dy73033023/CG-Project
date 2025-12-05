@@ -4,6 +4,7 @@
 #include <gl/glew.h>
 #include <glm.hpp>
 #include <ext.hpp>
+#include <gl/glu.h> //gluUnproject 사용
 #include <vector>
 #include <string>
 #include <random>
@@ -32,12 +33,19 @@ struct MultiTextureObject {
     glm::mat4 ModelMatrix = glm::mat4(1.0f);
 
     // OBB 충돌처리를 위한 추가 필드
-	OBB obbLocal;   // 로컬 OBB
-	OBB obbWorld;   // 월드 OBB
+    OBB obbLocal;   // 로컬 OBB
+    OBB obbWorld;   // 월드 OBB
 };
 
+// 두더지 위치 정보
+struct MoleXYZT {
+    float X;
+    float Y;
+    float Z;
+    int MoleType;
+};
 
-
+extern MoleXYZT MoleCoordinates[16];
 
 // -------------------- 전역 변수 (Global Variables) --------------------
 extern std::random_device rd;
@@ -114,7 +122,9 @@ extern MultiTextureObject GoldenMoleObject;
 // -- 두더지 -- (폭탄)
 extern MultiTextureObject BombMoleObject;
 
-
+// -- 효과 -- 
+// -- 동전 --
+extern MultiTextureObject CoinObject;
 // 텍스처 ID들을 저장할 벡터
 
 // -- 땅 --
@@ -174,6 +184,10 @@ extern std::vector<GLuint> GoldenMoleTextureIds;
 // -- 두더지 -- (폭탄)
 extern std::vector<GLuint> BombMoleTextureIds;
 
+// -- 효과 -- 
+// -- 동전 --
+extern std::vector<GLuint> CoinTextureIds;
+
 // 축 VAO
 extern GLuint AxesVao;
 
@@ -189,6 +203,17 @@ extern float LightIntensity;
 extern glm::vec3 LightPos;
 extern float CameraPosZ;
 
+// 카메라 무빙
+extern bool CameraMoveStart;
+// 카메라 이동 거리
+extern float CameraMoveTranslationX;
+extern float CameraMoveTranslationY;
+extern float CameraMoveTranslationZ;
+
+// 카메라 보는 방향
+extern float CameraMoveAtX;
+
+
 // 회전 축
 extern float Rx, Ry;
 
@@ -199,6 +224,15 @@ extern GLfloat cameraRX, cameraRY, cameraTX, cameraTY;
 extern GLint preCursorX, preCursorY, nowCursorX, nowCursorY;
 extern GLfloat modelMoveTX;
 extern GLfloat modelMoveTY;
+extern GLfloat modelMoveTZ;
+
+
+// 마우스 입력을 3차원 월드공간으로 바꾸기 위한 변수
+extern GLint screenWidth;
+extern GLint screenHeight;
+extern GLdouble modelview[16];
+extern GLdouble projection[16];
+extern GLint viewport[4];
 
 // -- 망치 움직임 상태 --
 extern bool hammerDown;
@@ -207,10 +241,23 @@ extern bool hammerUp;
 // -- 망치 회전 각도 -- 
 extern GLfloat modelhammerRZ;
 
-// --망치 선택 변수 --
+// ----------------- 객체 선택 기능 변수 (Object Selection Variables) -------------------
+// 망치 선택 변수
 extern int HammerChoice;
-// 1. 악마 망치, 2. 보석 박혀있는 망치, 3.~
-
-// --두더지 선택 변수--
+// 두더지 선택 변수
 extern int MoleChoice;
-// 1. 기본 두더지, 2.~
+
+// ----------------- 효과 관련 변수 (Effect Variables) -------------------
+// 이펙트 렌더링 변수
+extern bool Effect;
+// 이펙트 선택 변수
+extern int EffectChoice;
+// ------------------ 동전 애니메이션 ------------------
+extern float CoinY;
+extern float CoinAngle;
+
+// 충돌 체크 변수
+// 충돌이 발생했는지 여부
+extern bool preCollision;
+// 충돌 횟수
+extern int collisionCount;

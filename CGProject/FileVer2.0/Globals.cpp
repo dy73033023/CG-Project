@@ -76,6 +76,10 @@ MultiTextureObject GoldenMoleObject;
 // -- 두더지 -- (폭탄)
 MultiTextureObject BombMoleObject;
 
+// -- 효과 -- 
+// -- 동전 --
+MultiTextureObject CoinObject;
+
 // 텍스처 ID들을 저장할 벡터
 // -- 땅 --
 std::vector<GLuint> GroundTextureIds;
@@ -135,6 +139,9 @@ std::vector<GLuint> GoldenMoleTextureIds;
 // -- 두더지 -- (폭탄)
 std::vector<GLuint> BombMoleTextureIds;
 
+// -- 효과 --
+// -- 동전 --
+std::vector<GLuint> CoinTextureIds;
 // 축 VAO
 GLuint AxesVao = 0;
 
@@ -148,7 +155,16 @@ bool RotateObject = true;
 float RotationAngle = 0.0f;
 float LightIntensity = 1.0f;
 glm::vec3 LightPos = glm::vec3(0.0f, 50.0f, 50.0f);
-float CameraPosZ = 60.0f;
+float CameraPosZ = 36.0f;
+
+// 카메라 무빙
+bool CameraMoveStart = false;
+float CameraMoveTranslationX = -27.0f;
+float CameraMoveTranslationY = 9.5f;
+float CameraMoveTranslationZ = 70.0f;
+
+float CameraMoveAtX = 5.0f;
+
 
 // 회전 축
 float Rx = 0, Ry = 1;
@@ -166,6 +182,14 @@ GLint nowCursorX = 0;
 GLint nowCursorY = 0;
 GLfloat modelMoveTX = 0.0f;
 GLfloat modelMoveTY = 0.0f;
+GLfloat modelMoveTZ = 0.0f;
+
+// 마우스 입력을 3차원 월드공간으로 바꾸기 위한 변수
+GLint screenWidth = 1200;
+GLint screenHeight = 800;
+GLdouble modelview[16];
+GLdouble projection[16];
+GLint viewport[4];
 
 // 망치 움직임 상태
 bool hammerDown = false;
@@ -174,6 +198,31 @@ bool hammerUp = false;
 // 망치 회전 각도
 GLfloat modelhammerRZ = 0.0f;
 
+// ----------------- 객체 선택 기능 변수 (Object Selection Variables) -------------------
 // 망치 선택 변수
-int HammerChoice = 0; // 0.초기 선택 x 1. 악마 망치, 2. 보석 박혀있는 망치, 3~
-int MoleChoice = 0; // 0. 초기 선택x  1.기본 두더지  2.~
+int HammerChoice = 0;
+// 두더지 선택 변수
+int MoleChoice = 0; 
+
+// ----------------- 효과 관련 변수 (Effect Variables) -------------------
+// 이펙트 렌더링 변수
+bool Effect = false;
+// 이펙트 선택 변수
+int EffectChoice = 0;
+// ------------------ 동전 애니메이션 ------------------
+float CoinY = 0.0f;
+float CoinAngle = 0.0f;
+
+// 충돌 체크 변수
+// 충돌이 발생했는지 여부
+bool preCollision;
+// 충돌 횟수
+int collisionCount;
+//	-------------------- 두더지 위치 -----------------------
+
+MoleXYZT MoleCoordinates[16] = {
+    {0.4f, 0.0f, 0.2f, 1}, {9.8f, 0.0f, -7.5f, 1}, {-7.3f, 0.0f, 4.5f, 1}, {2.25f, 0.0f, 10.6f, 1},
+    {-3.7f, 0.0f, -7.2f, 1}, {8.8f, 0.0f, 4.1f, 1}, {-4.7f, 0.0f, -2.0f, 2}, {3.5f, 0.0f, 5.0f, 2},
+    {-8.8f, 0.0f, 9.0f, 2}, {8.8f, 0.0f, -0.8f, 2}, {9.2f, 0.0f, 10.0f, 2}, {-10.2f, 0.0f, -1.3f, 3},
+    {-8.6f, 0.0f, -8.7f, 3}, {2.2f, 0.0f, -9.2f, 3}, {5.1f, 0.0f, -5.0f, 3}, {-2.6f, 0.0f, 6.9f, 3},
+};
