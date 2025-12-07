@@ -61,6 +61,9 @@ extern GLint LocObjectColor, LocHasTexture, LocLightPos, LocLightColor, LocLight
 extern GLint LocMainTexture;
 
 // 객체 렌더링 정보
+// -- 게임 제목 --
+extern MultiTextureObject GameTitleObject;
+
 // -- 땅 --
 extern MultiTextureObject GroundObject;
 
@@ -130,6 +133,8 @@ extern MultiTextureObject CoinObject;
 extern MultiTextureObject HeartObject;
 
 // 텍스처 ID들을 저장할 벡터
+// -- 게임 제목 --
+extern std::vector<GLuint> GameTitleTextureIds;
 
 // -- 땅 --
 extern std::vector<GLuint> GroundTextureIds;
@@ -267,6 +272,7 @@ extern int EffectChoice;
 extern float CoinY;
 extern float CoinAngle;
 extern float HeartAngle;
+extern float GameTitleAngle;
 
 // 충돌 체크 변수
 // 충돌이 발생했는지 여부

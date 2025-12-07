@@ -285,6 +285,13 @@ void DrawScene() {
 
     // ---------------------------- 배경 렌더링 ----------------------------
     // 배경 오브젝트 렌더링 (Static Object)
+    // 게임 제목 렌더링
+    glUniform1f(LocLightIntensity, 1.0f); // 조명 세기 조절
+	glm::mat4 RotateModel = glm::rotate(glm::mat4(1.0f), glm::radians(GameTitleAngle), glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 GameTitleModel = glm::translate(glm::mat4(1.0f), glm::vec3(-8.0f, 3.0f, 30.0f)) * RotateModel;
+    GameTitleModel = GameTitleModel * GameTitleObject.ModelMatrix;
+    Draw(GameTitleObject, GameTitleModel);
+
     // 땅 렌더링
     glUniform1f(LocLightIntensity, 0.7f); // 조명 세기 조절
     glm::mat4 GroundModel = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
@@ -534,6 +541,8 @@ void DrawScene() {
 
 // -------------------- 타이머 & 키보드 (Timer & Keyboard) --------------------
 void Timer(int) {
+    
+	// 망치 모션
     if (hammerDown) {
         modelhammerRZ += 10.0f;
         if (modelhammerRZ >= 90.0f) {
@@ -550,6 +559,7 @@ void Timer(int) {
         }
     }
 
+	// 카메라 무빙
     if (CameraMoveStart) {
         CameraMoveTranslationZ -= 0.1f;
         CameraMoveTranslationX += 0.07941f;
@@ -573,6 +583,7 @@ void Timer(int) {
 		}
     }
 
+	// 코인 효과 움직임
     if (Effect) {
         if (EffectChoice == 1) {
             CoinY += 0.2f;
@@ -586,10 +597,14 @@ void Timer(int) {
         }
     }
 
-    if (HeartRotate) {
-        HeartAngle += 5.0f;
-    }
+    // 하트 UI 회전
+    if (HeartRotate) HeartAngle += 5.0f;
 
+    // 게임 제목 회전
+    if (CameraMoveStart) GameTitleAngle += 1.0f;
+	else GameTitleAngle = 0.0f;
+    
+    
     glutPostRedisplay();
     glutTimerFunc(16, Timer, 0);
 }
@@ -622,7 +637,7 @@ void Keyboard(unsigned char key, int, int) {
             std::cout << "CameraPosZ: " << CameraPosZ << std::endl;
             break;
         case's':
-            // 카메라 뒤 이동
+            // 카메라 뒤 이동x
             CameraPosZ += 2.0f;
             std::cout << "CameraPosZ: " << CameraPosZ << std::endl;
             break;
@@ -708,7 +723,11 @@ int main(int argc, char** argv) {
     // OBB 렌더링 초기화 함수 호출 추가
     InitOBBRenderer();
 
+    
     // 텍스처 로드 
+	// 게임 제목 - WHACK A MOLE(두더지 잡기)
+    GameTitleTextureIds.push_back(LoadTexture("GameTitle.jpg"));
+    
     // 환경 - (땅)
     GroundTextureIds.push_back(LoadTexture("Ground.jpg"));
 
@@ -777,6 +796,9 @@ int main(int argc, char** argv) {
     HeartTextureIds.push_back(LoadTexture("Heart.jpg"));
 
     // ---- 오브젝트 생성 ----
+    // 게임 제목 - WHACK A MOLE(두더지 잡기)
+    CreateMultiFaceObject(GameTitleObject, "GameTitle.obj", glm::vec3(1.0f, 1.0f, 1.0f), GameTitleTextureIds);
+
     // 환경 - (땅)
     CreateMultiFaceObject(GroundObject, "Ground.obj", glm::vec3(1.0f, 1.0f, 1.0f), GroundTextureIds);
 

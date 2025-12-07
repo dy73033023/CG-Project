@@ -15,6 +15,9 @@ GLint LocMainTexture = -1;
 
 // 객체 렌더링 정보
 
+// -- 게임 제목 --
+MultiTextureObject GameTitleObject;
+
 // -- 땅 --
 MultiTextureObject GroundObject;
 
@@ -84,6 +87,9 @@ MultiTextureObject CoinObject;
 MultiTextureObject HeartObject;
 
 // 텍스처 ID들을 저장할 벡터
+// -- 게임 제목 --
+std::vector<GLuint> GameTitleTextureIds;
+
 // -- 땅 --
 std::vector<GLuint> GroundTextureIds;
 
@@ -165,7 +171,7 @@ glm::vec3 LightPos = glm::vec3(0.0f, 50.0f, 50.0f);
 float CameraPosZ = 36.0f;
 
 // 카메라 무빙
-bool CameraMoveStart = false;
+bool CameraMoveStart = true;
 float CameraMoveTranslationX = -27.0f;
 float CameraMoveTranslationY = 9.5f;
 float CameraMoveTranslationZ = 70.0f;
@@ -224,6 +230,7 @@ int EffectChoice = 0;
 float CoinY = 0.0f;
 float CoinAngle = 0.0f;
 float HeartAngle = 0.0f;
+float GameTitleAngle = 0.0f;
 
 // 충돌 체크 변수
 // 충돌이 발생했는지 여부
