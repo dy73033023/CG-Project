@@ -367,17 +367,18 @@ void DrawScene() {
 
 	// ---------------------------- UI ·»´õ¸µ ----------------------------
     // ÇÏÆ® ·»´õ¸µ
-    glUniform1f(LocLightIntensity, 1.0f);
-    int CurrentHp = Hp;
-    std::vector<glm::mat4> HeartModel(CurrentHp, glm::mat4(1.0f));
-    glm::mat4 RotateModelMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(HeartAngle), glm::vec3(0, 1, 0));
+    if (!CameraMoveStart) {
+        glUniform1f(LocLightIntensity, 1.0f);
+        int CurrentHp = Hp;
+        std::vector<glm::mat4> HeartModel(CurrentHp, glm::mat4(1.0f));
+        glm::mat4 RotateModelMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(HeartAngle), glm::vec3(0, 1, 0));
 
-    for (int i = 0; i < CurrentHp; ++i) {
-        HeartModel[i] = glm::translate(glm::mat4(1.0f), glm::vec3(-4.0f + 2.0f * i, 5.0f, -10.0f)) * RotateModelMatrix;
-        HeartModel[i] = HeartModel[i] * HeartObject.ModelMatrix;
-        Draw(HeartObject, HeartModel[i]);
+        for (int i = 0; i < CurrentHp; ++i) {
+            HeartModel[i] = glm::translate(glm::mat4(1.0f), glm::vec3(-4.0f + 2.0f * i, 5.0f, -10.0f)) * RotateModelMatrix;
+            HeartModel[i] = HeartModel[i] * HeartObject.ModelMatrix;
+            Draw(HeartObject, HeartModel[i]);
+        }
     }
-    
 
     glUniform1f(LocLightIntensity, 1.0f);
 	// --------------------------------------------------------------------
