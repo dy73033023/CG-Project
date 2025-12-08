@@ -43,6 +43,7 @@ struct MoleXYZT {
     float Y;
     float Z;
     int MoleType;
+	bool IsUp; // 두더지가 올라와 있는지 여부
 };
 
 extern MoleXYZT MoleCoordinates[16];
@@ -266,6 +267,9 @@ extern bool HeartRotate;
 extern int Hp; // 하트 개수
 // 이펙트 선택 변수
 extern int EffectChoice;
+
+// 두더지 변환 애니메이션 변수
+extern float MoleTransY[16];
 
 
 // ------------------ UI, 이펙트 애니메이션 ------------------

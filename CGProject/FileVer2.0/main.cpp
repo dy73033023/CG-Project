@@ -170,8 +170,8 @@ void DrawOBB(const OBB& obb, const glm::vec3& color, bool& drawOBB) {
     // OBB를 그릴 때 깊이 테스트를 비활성화하여 항상 앞에 그려지도록 할 수 있습니다. (선택 사항)
     // GLboolean depthTestEnabled = glIsEnabled(GL_DEPTH_TEST);
     // glDisable(GL_DEPTH_TEST);
-    if(drawOBB)
-    glDrawElements(GL_LINES, 24, GL_UNSIGNED_INT, indices);
+    if (drawOBB)
+        glDrawElements(GL_LINES, 24, GL_UNSIGNED_INT, indices);
 
     // if(depthTestEnabled) glEnable(GL_DEPTH_TEST);
 
@@ -179,10 +179,6 @@ void DrawOBB(const OBB& obb, const glm::vec3& color, bool& drawOBB) {
     glBindVertexArray(0);
     glUniform1f(LocLightIntensity, LightIntensity); // 조명 복원
 }
-
-
-
-
 
 
 
@@ -228,22 +224,22 @@ void DrawScene() {
     glClearColor(0.5f, 0.8f, 1.0f, 1.0f);
     glm::vec3 CameraPos;
     glm::mat4 View;
-    if(CameraMoveStart) {
+    if (CameraMoveStart) {
         // 카메라 무빙 시작
         CameraPos = glm::vec3(CameraMoveTranslationX, CameraMoveTranslationY, CameraMoveTranslationZ);
         View = glm::lookAt(CameraPos, glm::vec3(CameraMoveAtX, 0.0f, 0.0f), glm::vec3(0, 1.0f, 0));
-	}
+    }
     else if (!CameraMoveStart) {
         // 카메라/뷰 설정
         CameraPos = glm::vec3(0.0f, 15.0f, CameraPosZ);
         View = glm::lookAt(CameraPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0, 1.0f, 0));
     }
     // View 행렬 조작 없이 일반 View 행렬 그대로 사용
-    
+
     if (CameraMoveStart) {
         // 카메라 무빙 중일 때 회전 적용
        /* View = glm::rotate(View, glm::radians(CameraMoveRotationY), glm::vec3(0.0f, 1.0f, 0.0f));*/
-        
+
     }
     glm::mat4 Projection = glm::perspective(glm::radians(45.0f), (float)1200 / 800, 0.1f, 1000.0f);
 
@@ -287,7 +283,7 @@ void DrawScene() {
     // 배경 오브젝트 렌더링 (Static Object)
     // 게임 제목 렌더링
     glUniform1f(LocLightIntensity, 1.0f); // 조명 세기 조절
-	glm::mat4 RotateModel = glm::rotate(glm::mat4(1.0f), glm::radians(GameTitleAngle), glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 RotateModel = glm::rotate(glm::mat4(1.0f), glm::radians(GameTitleAngle), glm::vec3(0.0f, 1.0f, 0.0f));
     glm::mat4 GameTitleModel = glm::translate(glm::mat4(1.0f), glm::vec3(-8.0f, 3.0f, 30.0f)) * RotateModel;
     GameTitleModel = GameTitleModel * GameTitleObject.ModelMatrix;
     Draw(GameTitleObject, GameTitleModel);
@@ -365,7 +361,7 @@ void DrawScene() {
     Draw(GolemObject, GolemModel);
     // ---------------------------------------------------------------------
 
-	// ---------------------------- UI 렌더링 ----------------------------
+    // ---------------------------- UI 렌더링 ----------------------------
     // 하트 렌더링
     if (!CameraMoveStart) {
         glUniform1f(LocLightIntensity, 1.0f);
@@ -381,8 +377,8 @@ void DrawScene() {
     }
 
     glUniform1f(LocLightIntensity, 1.0f);
-	// --------------------------------------------------------------------
-    
+    // --------------------------------------------------------------------
+
     // ---------------------------- 망치 두더지 이펙트  렌더링 ----------------------------
     if (!CameraMoveStart) {
         // 오브젝트 렌더링 (Rotatable Object)
@@ -406,7 +402,10 @@ void DrawScene() {
 
 
         // 두더지 렌더링
-        
+
+        // 모든 두더지 OBB 저장 배열
+        OBB AllMoleObjects[16];
+
 
         MultiTextureObject* Mole[16] = {
             &EmptyObject,&EmptyObject,&EmptyObject,&EmptyObject,
@@ -415,21 +414,37 @@ void DrawScene() {
             &EmptyObject,&EmptyObject,&EmptyObject,&EmptyObject
         };
 
+		MultiTextureObject* AllMoles[16] = {
+            &EmptyObject,&EmptyObject,&EmptyObject,&EmptyObject,
+            &EmptyObject,&EmptyObject,&EmptyObject,&EmptyObject,
+            &EmptyObject,&EmptyObject,&EmptyObject,&EmptyObject,
+            &EmptyObject,&EmptyObject,&EmptyObject,&EmptyObject
+		};
+
         for (int i = 0; i < 16; ++i) {
-            
+      
             if (MoleCoordinates[i].MoleType == 1) Mole[i] = &MoleObject;
             if (MoleCoordinates[i].MoleType == 2) Mole[i] = &GoldenMoleObject;
             if (MoleCoordinates[i].MoleType == 3) Mole[i] = &BombMoleObject;
+            AllMoles[i] = Mole[i];
 
-            MultiTextureObject* CurrentObject = Mole[i];
-            glm::mat4 FinalModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(MoleCoordinates[i].X, MoleCoordinates[i].Y, MoleCoordinates[i].Z)) 
+            
+
+            MultiTextureObject* CurrentObject = AllMoles[i];
+            glm::mat4 FinalModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(MoleCoordinates[i].X, MoleCoordinates[i].Y + MoleTransY[i], MoleCoordinates[i].Z))
                 * CurrentObject->ModelMatrix;
+            
 
             // **1. 두더지 월드 OBB 업데이트**
             UpdateOBB(*CurrentObject, FinalModelMatrix);
+
+            // OBB 업데이트된 두더지 객체 저장
+			AllMoleObjects[i] = CurrentObject->obbWorld;
+
             Draw(*CurrentObject, FinalModelMatrix);
+            
         }
-        
+
 
         // 이펙트 렌더링
         if (Effect) {
@@ -440,18 +455,20 @@ void DrawScene() {
             MultiTextureObject* CurrentEffect = Effect;
 
             glm::mat4 RotateModelMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(CoinAngle), glm::vec3(0, 1, 0)) * CurrentEffect->ModelMatrix;
-            glm::mat4 FinalModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, CoinY, 0.0f)) * RotateModelMatrix * CurrentEffect->ModelMatrix;
-
+            glm::mat4 TransModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, CoinY, 0.0f)) * RotateModelMatrix * CurrentEffect->ModelMatrix;
+            glm::mat4 FinalModelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(5.0f, 5.0f, 5.0f)) * TransModelMatrix;
             Draw(*CurrentEffect, FinalModelMatrix);
         }
         // ---------------------------------------------------------------
-        
+
 
 
 
         // ---------------------------- 충돌 감지 및 반응 ----------------------------
         // **충돌 감지 플래그 초기화**
         bool collisionOccurred = false;
+        // 각 두더지 충돌 상태 저장
+        bool MoleCollision[16] = { false };
 
         for (int i = 0; i < 2; ++i) {
             MultiTextureObject* CurrentObject = HammerParts[i];
@@ -477,16 +494,30 @@ void DrawScene() {
             UpdateOBB(*OBBHammer, FinalModelMatrix);
 
             // **2. 망치와 두더지 충돌 검사**
-            if (CheckOBBCollision(OBBHammer->obbWorld, MoleObject.obbWorld)) {
-                collisionOccurred = true;
+            for (int j = 0; j < 16; ++j) {
+                if (CheckOBBCollision(OBBHammer->obbWorld, AllMoleObjects[j])) {
+                    collisionOccurred = true;
+					MoleCollision[j] = true;
+                }
             }
-
+            
             Draw(*CurrentObject, FinalModelMatrix);
         }
 
 
         // ---------------------------- 충돌 횟수 카운트 ----------------------------
         if (collisionOccurred && !preCollision) {
+            for (int i = 0; i < 16; ++i) {
+                if(MoleCollision[i] && AllMoles[i] == & BombMoleObject && MoleCoordinates[i].MoleType == 3) {
+                    Hp--;
+                    if (Hp == 0) exit(0);
+				}
+                if (MoleCollision[i] && AllMoles[i] == &GoldenMoleObject && MoleCoordinates[i].MoleType == 2) {
+					Effect = true;
+                    EffectChoice = 1;
+
+                }
+            }
             collisionCount++;
             std::cout << "Collision Detected! Total Collisions : " << collisionCount << std::endl;
         }
@@ -502,7 +533,13 @@ void DrawScene() {
             glUniform3f(LocObjectColor, 1.0f, 0.2f, 0.2f);
 
             // **충돌 시 OBB를 빨간색으로 그립니다.**
-            DrawOBB(MoleObject.obbWorld, glm::vec3(1.0f, 0.0f, 0.0f), drawOBB); // 두더지 머리 OBB
+            for (int i = 0; i < 16; ++i) {
+                if (MoleCollision[i]) {
+                    DrawOBB(AllMoleObjects[i], glm::vec3(1.0f, 0.0f, 0.0f), drawOBB); // 두더지 머리 OBB
+                }
+                    
+            }
+           
             // 현재 망치 파트의 OBB도 빨간색으로 그립니다.
             // **주의: 망치는 여러 파트이므로 충돌한 파트만 빨간색으로 그리는 것이 정확하나, 
             // 여기서는 OBB가 업데이트된 마지막 파트의 OBB를 그립니다.**
@@ -520,7 +557,10 @@ void DrawScene() {
             glUniform3f(LocObjectColor, 1.0f, 1.0f, 1.0f);
 
             // **충돌이 없으면 OBB를 초록색(또는 다른 색)으로 그립니다.**
-            DrawOBB(MoleObject.obbWorld, glm::vec3(0.0f, 1.0f, 0.0f), drawOBB); // 두더지 굴 OBB
+            for (int i = 0; i < 16; ++i) {
+                DrawOBB(AllMoleObjects[i], glm::vec3(0.0f, 1.0f, 0.0f), drawOBB); // 두더지 굴 OBB
+            }
+            
             for (int i = 0; i < 4; ++i) {
                 MultiTextureObject* CurrentObject = HammerParts[0];
                 if (!CurrentObject->Faces.empty()) {
@@ -530,11 +570,11 @@ void DrawScene() {
         }
         glUniform1f(LocLightIntensity, 1.0f); // 일반 조명 세기 복원 (혹시 DrawOBB가 변경했다면)
     }
-   
-    // --------------------------------------------------------------------------------------------------------------
+
+    // ---------------------------w-----------------------------------------------------------------------------------
 
 
-    
+
 
 
     glutSwapBuffers();
@@ -542,8 +582,8 @@ void DrawScene() {
 
 // -------------------- 타이머 & 키보드 (Timer & Keyboard) --------------------
 void Timer(int) {
-    
-	// 망치 모션
+
+    // 망치 모션
     if (hammerDown) {
         modelhammerRZ += 10.0f;
         if (modelhammerRZ >= 90.0f) {
@@ -560,35 +600,35 @@ void Timer(int) {
         }
     }
 
-	// 카메라 무빙
+    // 카메라 무빙
     if (CameraMoveStart) {
         CameraMoveTranslationZ -= 0.1f;
         CameraMoveTranslationX += 0.07941f;
         CameraMoveTranslationY += 0.016176f;
-		CameraMoveAtX -= 0.0147f;
+        CameraMoveAtX -= 0.0147f;
         if (CameraMoveAtX <= 0.0f) {
-			CameraMoveAtX = 0.0f;
+            CameraMoveAtX = 0.0f;
         }
-        if(CameraMoveTranslationZ <= CameraPosZ) {
+        if (CameraMoveTranslationZ <= CameraPosZ) {
             CameraMoveTranslationZ = CameraPosZ;
-		}
-        if (CameraMoveTranslationY >= 15.0f) {
-			CameraMoveTranslationY = 15.0f;
         }
-        if(CameraMoveTranslationX >= 0.0f) {
+        if (CameraMoveTranslationY >= 15.0f) {
+            CameraMoveTranslationY = 15.0f;
+        }
+        if (CameraMoveTranslationX >= 0.0f) {
             CameraMoveTranslationX = 0.0f;
-		}
-        if(CameraMoveAtX == 0.0f && CameraMoveTranslationX == 0.0f && 
+        }
+        if (CameraMoveAtX == 0.0f && CameraMoveTranslationX == 0.0f &&
             CameraMoveTranslationY == 15.0f && CameraMoveTranslationZ == CameraPosZ) {
             CameraMoveStart = false;
-		}
+        }
     }
 
-	// 코인 효과 움직임
+    // 코인 효과 움직임
     if (Effect) {
         if (EffectChoice == 1) {
-            CoinY += 0.2f;
-            CoinAngle += 10.0f;
+            CoinY += 0.1f;
+            CoinAngle += 5.0f;
             if (CoinY >= 5.0f)
             {
                 CoinY = 0.0f;
@@ -603,9 +643,26 @@ void Timer(int) {
 
     // 게임 제목 회전
     if (CameraMoveStart) GameTitleAngle += 1.0f;
-	else GameTitleAngle = 0.0f;
-    
-    
+    else GameTitleAngle = 0.0f;
+
+    for(int i =0; i < 16; ++i) {
+        // 두더지 올라오는 모션
+        if (MoleCoordinates[i].IsUp) {
+            MoleTransY[i] += 0.01f;
+            if (MoleTransY[i] >= 0.0f) {
+                MoleTransY[i] = 0.05f;
+                MoleCoordinates[i].IsUp = false;
+            }
+        }
+        else {
+            MoleTransY[i] -= 0.5f;
+            if (MoleTransY[i] <= -10.0f) {
+                MoleTransY[i] = -10.0f;
+                MoleCoordinates[i].IsUp = true;
+            }
+        }
+	}
+
     glutPostRedisplay();
     glutTimerFunc(16, Timer, 0);
 }
@@ -620,10 +677,10 @@ void Keyboard(unsigned char key, int, int) {
         case'3': HammerChoice = 3; break; // 보석 박혀있는 망치
             // 이펙트 출력 - 임시
         case'e':
-            Effect = true; 
+            Effect = true;
             EffectChoice = 1;
             break;
-		case'h':
+        case'h':
             Hp -= 1;
             if (Hp <= 0) Hp = 0;
             break;
@@ -644,7 +701,7 @@ void Keyboard(unsigned char key, int, int) {
             break;
         case'b':
             // OBB 바운딩 박스 토글
-            drawOBB = !drawOBB;
+            drawOBB = false;
             break;
         case'z':
             // 카메라 무빙 시작
@@ -724,11 +781,11 @@ int main(int argc, char** argv) {
     // OBB 렌더링 초기화 함수 호출 추가
     InitOBBRenderer();
 
-    
+
     // 텍스처 로드 
-	// 게임 제목 - WHACK A MOLE(두더지 잡기)
+    // 게임 제목 - WHACK A MOLE(두더지 잡기)
     GameTitleTextureIds.push_back(LoadTexture("GameTitle.jpg"));
-    
+
     // 환경 - (땅)
     GroundTextureIds.push_back(LoadTexture("Ground.jpg"));
 
@@ -788,9 +845,9 @@ int main(int argc, char** argv) {
     // -- 폭탄 --
     BombMoleTextureIds.push_back(LoadTexture("BombMole.jpg"));
 
-	// 오브젝트 - (효과)
-	// -- 동전 --
-	CoinTextureIds.push_back(LoadTexture("Coin.jpg"));
+    // 오브젝트 - (효과)
+    // -- 동전 --
+    CoinTextureIds.push_back(LoadTexture("Coin.jpg"));
 
     // 오브젝트 - (UI)
     // -- 하트 --
@@ -870,7 +927,7 @@ int main(int argc, char** argv) {
     CreateMultiFaceObject(HeartObject, "Heart.obj", glm::vec3(1.5f), HeartTextureIds);
 
     // 렌더링 설정 및 메인 루프 시작
-   
+
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glFrontFace(GL_CW);
